@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "879306768081",
+    "firebase_url": "https://pin-my-bus.firebaseio.com",
+    "project_id": "pin-my-bus",
+    "storage_bucket": "pin-my-bus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:879306768081:android:9c5c79f84122ff88b30ff0",
+        "android_client_info": {
+          "package_name": "com.example.pinmybus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "879306768081-c1eu7t3cf34l6iem908ck5v3npn7s0cp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pinmybus",
+            "certificate_hash": "9f4157fb0bd7947884599886ce7b1610370c9067"
+          }
+        },
+        {
+          "client_id": "879306768081-oq94gsgmv5blq3glns9a2pbned4tb1u1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArDBP3TFS7CCxG5lWcKiAMzgnjP_o_eCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "879306768081-oq94gsgmv5blq3glns9a2pbned4tb1u1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
