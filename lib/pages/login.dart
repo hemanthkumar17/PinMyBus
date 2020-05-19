@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
@@ -26,8 +27,17 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
+    _initializeData(user); //*
     return user;
   }
+
+//*Dismantle after the backend is ready to use
+
+  Future<void> _initializeData(FirebaseUser user) async {
+    final FirebaseDatabase dataBase = FirebaseDatabase.instance;
+    dataBase.reference().child("Drivers").child(user.uid).child("Approval").set("No");
+  }
+//*
 
   @override
   Widget build(BuildContext context) {
