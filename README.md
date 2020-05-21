@@ -1,12 +1,12 @@
-## Pin My Bus - User Version
+# Pin My Bus - User Version
 
-# User features
+## User features
 
 - Login using Google, Facebook, Twitter and Apple accounts
 - Show nearby bus stops using markers on a Map.
 - Sugggest bus stop
 
-# Add choice of buses- private, public or Institutional buses(in case of institutional, prompt OTP) for each following pages
+## Add choice of buses- private, public or Institutional buses(in case of institutional, prompt OTP) for each following pages
 
 - Select markers to view all the buses running to that stop today and able to change the date and start time limit
 - Using bus no. to find a bus. If its on a trip, share the last reached stop with time at that stop.
