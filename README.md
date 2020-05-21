@@ -1,20 +1,17 @@
-<<<<<<< HEAD
-# pinmybus
+## Pin My Bus - User Version
 
-A new Flutter project.
+# User features
 
-## Getting Started
+- Login using Google, Facebook, Twitter and Apple accounts
+- Show nearby bus stops using markers on a Map.
+- Sugggest bus stop
 
-This project is a starting point for a Flutter application.
+# Add choice of buses- private, public or Institutional buses(in case of institutional, prompt OTP) for each following pages
 
-A few resources to get you started if this is your first Flutter project:
+- Select markers to view all the buses running to that stop today and able to change the date and start time limit
+- Using bus no. to find a bus. If its on a trip, share the last reached stop with time at that stop.
+- Using starting point and destination, display all the buses today and able to change date and start time limit. If bus is running, able to open 
+- Viewing a bus - regular timing each week, bus no., fare for the trip
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-=======
-# PinMyBus
->>>>>>> 9ea9ddea387e750f69c0545b7f808bb668cbd17d
+- Set up a notification that can be set by the user for x mins before a bus reaches a stop on a day(Also notify when bus is cancelled)
