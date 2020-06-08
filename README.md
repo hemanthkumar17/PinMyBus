@@ -4,7 +4,7 @@
 
 - Login using Google, Facebook, Twitter and Apple accounts
 - Show nearby bus stops using markers on a Map.
-- Sugggest bus stop
+- Suggest bus stop
 
 ## Add choice of buses- private, public or Institutional buses(in case of institutional, prompt OTP) for each following pages
 
