@@ -21,6 +21,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  flutter_local_notifications: ^1.4.4+1
+  path_provider:
+  rxdart:
   font_awesome_flutter: ^8.8.1
   flutter:
     sdk: flutter
