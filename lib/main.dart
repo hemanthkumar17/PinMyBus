@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pinmybus/pages/home.dart';
 import 'package:pinmybus/pages/login.dart';
 
 void main() async {
@@ -19,6 +20,8 @@ class PinMyBusApp extends StatelessWidget {
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.orange),
       routes: {
         '/login': (context) => Login(),
+        '/home' : (context) => Home(),
+        // '/stopmap':(context) => Map(),
       },
     );
   }

@@ -51,7 +51,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final color = Colors.black;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 215, 0, .9),
+      backgroundColor: Colors.white,
       body: Container(
         child: Center(
           child: Column(
@@ -59,23 +59,22 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               AvatarGlow(
-                endRadius: 150,
-                duration: Duration(seconds: 2),
-                glowColor: Colors.white24,
-                repeat: true,
-                repeatPauseDuration: Duration(seconds: 2),
-                startDelay: Duration(seconds: 1),
-                child: Material(
-                    elevation: 8.0,
-                    shape: CircleBorder(),
-                    child: CircleAvatar(
-                      radius: 80,
-                        backgroundColor: Colors.white,
-                        // backgroundImage: NetworkImage('https://media.gettyimages.com/vectors/bus-with-navigation-location-map-pin-icon-vector-illustration-vector-id1208844814'),
-                        child: Icon(IconData(58672, fontFamily: 'MaterialIcons')
-                        ,size: 100,
-                        color: Color.fromRGBO(255, 215, 0, .9),),
-                        ))),
+                        endRadius: 150,
+                        duration: Duration(seconds: 2),
+                        glowColor: Color.fromRGBO(255, 171, 0, .9),
+                        repeat: true,
+                        repeatPauseDuration: Duration(seconds: 2),
+                        startDelay: Duration(seconds: 1),
+                        child: Container(
+                            width: 150,
+                            padding: const EdgeInsets.all(20.0),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.rectangle,
+                                // color: Colors.white,
+                                borderRadius: BorderRadius.circular(100)),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                            ))),
               DelayedAnimation(
                 child: Text(
                   "PinMyBus",
@@ -100,6 +99,9 @@ class _LoginState extends State<Login> {
                 height: 30.0,
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
+              RaisedButton(onPressed: (){
+                Navigator.pushNamed(context, '/home');
+              })
             ],
           ),
         ),
