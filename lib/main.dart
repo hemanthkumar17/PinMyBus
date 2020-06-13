@@ -26,7 +26,7 @@ class PinMyBusApp extends StatelessWidget {
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.orange),
       routes: {
         '/login': (context) => Login(),
-        '/home' : (context) => Home(),
+        '/home' : (context) => Home(ModalRoute.of(context).settings.arguments),
         '/map':(context) => Map(),
         '/buslist_stop':(context) => BuslistStop(),
         '/buslist_route':(context) => BuslistRoute(),

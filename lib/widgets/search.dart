@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/models/stops.dart';
 class Stopsearch extends SearchDelegate<Stop> {
   List<Stop> stops = [
@@ -23,7 +24,7 @@ class Stopsearch extends SearchDelegate<Stop> {
     return IconButton(
       icon: Icon(Icons.arrow_back),
       onPressed: () {
-        close(context, Stop("", ""));
+        close(context, Stop("", "", LatLng(0, 0)));
       },
     );
   }

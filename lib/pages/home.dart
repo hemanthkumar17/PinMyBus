@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/stops.dart';
@@ -8,7 +9,8 @@ import 'package:pinmybus/widgets/search.dart';
 import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+  final FirebaseUser user;
+  Home(this.user, {Key key}) : super(key: key);
 
   @override
   _HomeState createState() => _HomeState();
@@ -106,7 +108,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    String name='name here';
+  print(widget.user.email);
+    String name=widget.user.displayName;
     String phno='+911234567890';
     return Container(
       child: Scaffold(
@@ -269,7 +272,7 @@ class _HomeState extends State<Home> {
                                   ]),
                             ),
                             onTap: () {
-                              searchStop(context, true);
+                              searchStop(context, false);
                             }),
                         SizedBox(
                           height: 10,
