@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "879306768081",
-    "firebase_url": "https://pin-my-bus.firebaseio.com",
-    "project_id": "pin-my-bus",
-    "storage_bucket": "pin-my-bus.appspot.com"
+    "project_number": "28735654339",
+    "firebase_url": "https://pinmybus-staging.firebaseio.com",
+    "project_id": "pinmybus-staging",
+    "storage_bucket": "pinmybus-staging.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:879306768081:android:9c5c79f84122ff88b30ff0",
+        "mobilesdk_app_id": "1:28735654339:android:b441a29142cc58005a5576",
         "android_client_info": {
           "package_name": "com.example.pinmybus"
         }
       },
       "oauth_client": [
         {
-          "client_id": "879306768081-c1eu7t3cf34l6iem908ck5v3npn7s0cp.apps.googleusercontent.com",
+          "client_id": "28735654339-i48nmjc3kdep6l1pn7vbf83f0dqkbjb7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.pinmybus",
@@ -23,20 +23,57 @@
           }
         },
         {
-          "client_id": "879306768081-oq94gsgmv5blq3glns9a2pbned4tb1u1.apps.googleusercontent.com",
+          "client_id": "28735654339-lc5l2m9qi3c27m3cktmu00i8mjf4cvvi.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyArDBP3TFS7CCxG5lWcKiAMzgnjP_o_eCs"
+          "current_key": "AIzaSyDzO1Pjo5hdvIxMhMnerBYFVebu_-IQGRQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "879306768081-oq94gsgmv5blq3glns9a2pbned4tb1u1.apps.googleusercontent.com",
+              "client_id": "28735654339-lc5l2m9qi3c27m3cktmu00i8mjf4cvvi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28735654339:android:77f03d43ab1441075a5576",
+        "android_client_info": {
+          "package_name": "com.example.pinmybus_driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28735654339-lqijbq06rl9hmsi60ihd4vtfso6buqh1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pinmybus_driver",
+            "certificate_hash": "9f4157fb0bd7947884599886ce7b1610370c9067"
+          }
+        },
+        {
+          "client_id": "28735654339-lc5l2m9qi3c27m3cktmu00i8mjf4cvvi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzO1Pjo5hdvIxMhMnerBYFVebu_-IQGRQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28735654339-lc5l2m9qi3c27m3cktmu00i8mjf4cvvi.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

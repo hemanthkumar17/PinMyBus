@@ -38,12 +38,22 @@ class _LoginState extends State<Login> {
 
   Future<void> _initializeData(FirebaseUser user) async {
     final FirebaseDatabase dataBase = FirebaseDatabase.instance;
-    dataBase
+    await dataBase
         .reference()
-        .child("Drivers")
+        .child("userInfo")
         .child(user.uid)
-        .child("Approval")
-        .set("No");
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value == null) {
+        dataBase.reference().child("userInfo").child(user.uid).set({
+          "contactNumber": "",
+          "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
+          "email": user.email,
+          "status": "active",
+          "userType": "default",
+        });
+      }
+    });
   }
 //*
 
@@ -59,22 +69,22 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               AvatarGlow(
-                        endRadius: 150,
-                        duration: Duration(seconds: 2),
-                        glowColor: Color.fromRGBO(255, 171, 0, .9),
-                        repeat: true,
-                        repeatPauseDuration: Duration(seconds: 2),
-                        startDelay: Duration(seconds: 1),
-                        child: Container(
-                            width: 150,
-                            padding: const EdgeInsets.all(20.0),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                // color: Colors.white,
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                            ))),
+                  endRadius: 150,
+                  duration: Duration(seconds: 2),
+                  glowColor: Color.fromRGBO(255, 171, 0, .9),
+                  repeat: true,
+                  repeatPauseDuration: Duration(seconds: 2),
+                  startDelay: Duration(seconds: 1),
+                  child: Container(
+                      width: 150,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          // color: Colors.white,
+                          borderRadius: BorderRadius.circular(100)),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                      ))),
               DelayedAnimation(
                 child: Text(
                   "PinMyBus",
@@ -99,7 +109,7 @@ class _LoginState extends State<Login> {
                 height: 30.0,
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
-              RaisedButton(onPressed: (){
+              RaisedButton(onPressed: () {
                 Navigator.pushNamed(context, '/home');
               })
             ],
