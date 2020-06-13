@@ -8,9 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../models/globals.dart';
-import '../models/globals.dart';
-import '../models/stops.dart';
+import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/stops.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -45,7 +44,6 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    _getStops();
   }
 
   Future<FirebaseUser> _handleSignIn() async {
@@ -61,7 +59,8 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    _initializeData(user); //*
+    await _getStops();
+    await _initializeData(user); //*
     return user;
   }
 

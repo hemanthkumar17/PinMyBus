@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/models/stops.dart';
 import 'package:pinmybus/widgets/search.dart';
 import 'package:http/http.dart' as http;
@@ -108,9 +110,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-  print(widget.user.email);
-    String name=widget.user.displayName;
-    String phno='+911234567890';
+    print(widget.user.email);
+    String name = widget.user.displayName;
+    String phno = '+911234567890';
     return Container(
       child: Scaffold(
         appBar: AppBar(
@@ -308,7 +310,23 @@ class _HomeState extends State<Home> {
                                   style: TextStyle(
                                       fontSize: 10, color: Colors.black),
                                 ))),
-                            onPressed: () {
+                            onPressed: () async {
+                              Map<String, dynamic> data = {
+                                "startStop": start,
+                                "endStop": dest,
+                                "date": selectedDate.day.toString() +
+                                    '/' +
+                                    selectedDate.month.toString() +
+                                    '/' +
+                                    selectedDate.year.toString()
+                              };
+                              print(data);
+                              final HttpsCallable callable =
+                                  CloudFunctions.instance.getHttpsCallable(
+                                      functionName: "searchRoutes");
+                              final HttpsCallableResult response =
+                                  await callable.call(data);
+                                  print(response.data);
                               Navigator.pushNamed(context, '/buslist_route');
                             }),
                         SizedBox(
