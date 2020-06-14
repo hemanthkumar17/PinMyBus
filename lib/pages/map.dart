@@ -4,6 +4,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:pinmybus/models/globals.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Map extends StatefulWidget {
@@ -214,7 +215,7 @@ class MapState extends State<Map> {
                     RaisedButton(
                       onPressed: () async{
                         // Map<String, dynamic> data = {
-                        //         "startStop": stopname,
+                        //         "startStop": stopsComplete.firstWhere((element) => element.stopName == stopname).stopid,
                         //       };
                         //       print(data);
                         //       final HttpsCallable callable =
@@ -222,7 +223,7 @@ class MapState extends State<Map> {
                         //               functionName: "searchRoutes");
                         //       final HttpsCallableResult response =
                         //           await callable.call(data);
-                        //           print(response.data);
+                        //           print(response);
                         Navigator.pushNamed(context, '/buslist_stop');
                       },
                       color: Colors.white,

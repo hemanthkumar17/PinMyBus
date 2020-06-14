@@ -59,8 +59,8 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    await _getStops();
-    await _initializeData(user); //*
+    _getStops();
+    _initializeData(user); //*
     return user;
   }
 
@@ -163,7 +163,6 @@ class _LoginState extends State<Login> {
               .then((FirebaseUser user) =>
                   Navigator.pushNamed(context, '/home', arguments: user))
               .catchError((e) => print(e));
-          //Finish the OAuth consent to not get API Exception
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
