@@ -307,6 +307,13 @@ class _HomeState extends State<Home> {
                                       functionName: "searchRoutes");
                               final HttpsCallableResult response =
                                   await callable.call(data);
+                                  List<BusRoute> routeList = [];
+                                  print(response.data);
+                              for (var route in response.data) {
+                                routeList.add(BusRoute.fromResponse(route));
+                                print(route);
+                              }
+                              print(routeList);
                               print(response.data);
                               Navigator.pushNamed(context, '/buslist_route');
                             }),

@@ -17,7 +17,7 @@ class BusRoute {
   String ownerId;
   Map toJson() => jsonDecode(jsonEncode(Route));
   BusRoute(this.name, this.recMode, this.recList);
-  BusRoute.fromResponse(Map<String, dynamic> response) {
+  BusRoute.fromResponse(response) {
     this.name = response["name"];
     switch (response["recMode"]) {
       case "WEEKLY":
@@ -30,13 +30,16 @@ class BusRoute {
         this.recMode = RecMode.MONTHLY;
         break;
     }
-    this.recList = response["recList"];
+    print(response["startTime"]);
+    this.recList = response["recList"].cast<String>();
     this.startTime = TimeOfDay(
-        hour: response["startTime"].substring(0, 2),
-        minute: response["startTime"].substring(2));
+        hour: int.parse(response["startTime"].toString().substring(0, 2).padLeft(2, "0")),
+        minute: int.parse(response["startTime"].toString().substring(2).padLeft(2, "0")));
     this.ownerId = response["ownerId"];
     this.routeStops = [];
     for (var stop in response["routeStops"]) {
+      print(stop["stopId"]);
+      print(stopsComplete.firstWhere((element) => element.stopid == stop["stopId"]));
       this.routeStops.add(stopsComplete.firstWhere((element) => element.stopid == stop["stopId"]));
     }
     this.start = routeStops.first;

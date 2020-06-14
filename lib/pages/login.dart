@@ -163,7 +163,6 @@ class _LoginState extends State<Login> {
               .then((FirebaseUser user) =>
                   Navigator.pushNamed(context, '/home', arguments: user))
               .catchError((e) => print(e));
-          //Finish the OAuth consent to not get API Exception
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
