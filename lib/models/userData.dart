@@ -7,6 +7,6 @@ class Data {
   String name;
   String contact;
   String rcbookFilePath;
-  Routes route;
+  BusRoute route;
   Data(this.email, this.password, this.name, this.contact, this.rcbookFilePath, this.route);
 }

@@ -1,10 +1,15 @@
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/delayed_animation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/stops.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -16,6 +21,30 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _getStops() async {
+    // FirebaseAuth _auth = FirebaseAuth.instance;
+    // await _auth.signInWithEmailAndPassword(email: "admin@anandu.net", password: "password");
+    final HttpsCallable callable =
+        CloudFunctions.instance.getHttpsCallable(functionName: "listStops");
+    HttpsCallableResult response = await callable.call();
+    print(response.data);
+    stopsComplete = [];
+    for (var item in response.data['stops']) {
+      stopsComplete.add(Stop(
+          item['name'],
+          item["_id"],
+          LatLng(double.parse(item['location']['coordinates'][0].toString()),
+              double.parse(item['location']['coordinates'][1].toString()))));
+    }
+    print(stopsComplete);
+    // print(stops);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Future<FirebaseUser> _handleSignIn() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -30,7 +59,8 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    _initializeData(user); //*
+    await _getStops();
+    await _initializeData(user); //*
     return user;
   }
 
@@ -110,7 +140,7 @@ class _LoginState extends State<Login> {
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
               RaisedButton(onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushNamed(context, '/home', arguments: null);
               })
             ],
           ),
@@ -130,7 +160,8 @@ class _LoginState extends State<Login> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         onPressed: () {
           _handleSignIn()
-              .then((FirebaseUser user) => print(user))
+              .then((FirebaseUser user) =>
+                  Navigator.pushNamed(context, '/home', arguments: user))
               .catchError((e) => print(e));
           //Finish the OAuth consent to not get API Exception
         },
@@ -140,7 +171,8 @@ class _LoginState extends State<Login> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image(image: AssetImage("assets/google.png"), height: 35.0),
+              Image(
+                  image: AssetImage("assets/images/google.png"), height: 35.0),
             ],
           ),
         ),

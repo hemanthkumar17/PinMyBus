@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:convert';
 
 import 'stops.dart';
 
 enum RecMode { ONE_OFF, WEEKLY, MONTHLY }
 
-class Routes {
+class BusRoute {
   String name;
   RecMode recMode;
-  Stop start = Stop("", ""), end = Stop("", "");
+  Stop start = Stop("", "", LatLng(0, 0)), end = Stop("", "", LatLng(0, 0));
   List<String> recList;
   List<Stop> routeStops;
   TimeOfDay startTime;
   String ownerId;
   Map toJson() => jsonDecode(jsonEncode(Route));  
-  Routes(this.name, this.recMode, this.recList);
+  BusRoute(this.name, this.recMode, this.recList);
 }

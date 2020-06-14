@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -211,7 +212,17 @@ class MapState extends State<Map> {
                     Text(stopname),
                     Text(dist),
                     RaisedButton(
-                      onPressed: () {
+                      onPressed: () async{
+                        // Map<String, dynamic> data = {
+                        //         "startStop": stopname,
+                        //       };
+                        //       print(data);
+                        //       final HttpsCallable callable =
+                        //           CloudFunctions.instance.getHttpsCallable(
+                        //               functionName: "searchRoutes");
+                        //       final HttpsCallableResult response =
+                        //           await callable.call(data);
+                        //           print(response.data);
                         Navigator.pushNamed(context, '/buslist_stop');
                       },
                       color: Colors.white,
