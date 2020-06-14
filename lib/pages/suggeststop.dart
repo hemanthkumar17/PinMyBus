@@ -15,7 +15,7 @@ class MapPickerPage extends StatefulWidget {
 
 class _MapPickerPageState extends State<MapPickerPage> {
   Completer<GoogleMapController> _controller = Completer();
-  LatLng _initialposition;
+  LatLng _initialposition, _markerposition;
   CameraPosition _position;
 
   Future<String> getLocation() async {
@@ -114,18 +114,20 @@ class _MapPickerPageState extends State<MapPickerPage> {
                             // await auth.signInWithEmailAndPassword(
                             //     email: "admin@anandu.net",
                             //     password: "password");
-                            // final HttpsCallable callable = CloudFunctions
-                            //     .instance
-                            //     .getHttpsCallable(functionName: "requestStop");
-                            // HttpsCallableResult response =
-                            //     await callable.call(<String, dynamic>{
-                            //   "name": text,
-                            //   "coordinates": [
-                            //     _position.target.latitude,
-                            //     _position.target.longitude
-                            //   ]
-                            // });
-                            // print(response.data);
+                            final HttpsCallable callable = CloudFunctions
+                                .instance
+                                .getHttpsCallable(functionName: "requestStop");
+                                print(_position.target);
+                            HttpsCallableResult response =
+                                await callable.call(<String, dynamic>{
+                              "name": text,
+                              "coordinates": [
+                                _position.target.latitude,
+                                _position.target.longitude
+                              ]
+                            }).catchError((e)=>print(e));
+                            print(response.data);
+                            Navigator.pop(context);
                             Navigator.pop(context);
                           },
                           color: Color.fromRGBO(255, 171, 0, .9),

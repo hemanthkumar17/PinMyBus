@@ -38,22 +38,6 @@ class _HomeState extends State<Home> {
       });
   }
 
-  Future<void> addRoute() async {
-    var response = await http.post('$URL/addRoute',
-        headers: {"Content-type": "application/json"},
-        body: jsonEncode({
-          "Name": "Test_1 ",
-          "RecMode": "Daily",
-          "RecList": [0],
-          "TimeOfStart": 25,
-          "Path": [start, dest],
-          "Offsets": [0, 75],
-          "Owner": "Owner_1",
-          "Ref": "firebasereference1",
-        }));
-    print(response.body);
-  }
-
   List<Stop> stops = [];
 
   Future<void> searchStop(context, bool entry) async {
@@ -312,13 +296,10 @@ class _HomeState extends State<Home> {
                                 ))),
                             onPressed: () async {
                               Map<String, dynamic> data = {
-                                "startStop": start,
-                                "endStop": dest,
-                                "date": selectedDate.day.toString() +
-                                    '/' +
-                                    selectedDate.month.toString() +
-                                    '/' +
-                                    selectedDate.year.toString()
+                                "startStop": stopsComplete.firstWhere((element) => element.stopName == start).stopid,
+                                "endStop": stopsComplete.firstWhere((element) => element.stopName == start).stopid,
+                                "date":
+                                    "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year.toString()}"
                               };
                               print(data);
                               final HttpsCallable callable =
@@ -326,7 +307,7 @@ class _HomeState extends State<Home> {
                                       functionName: "searchRoutes");
                               final HttpsCallableResult response =
                                   await callable.call(data);
-                                  print(response.data);
+                              print(response.data);
                               Navigator.pushNamed(context, '/buslist_route');
                             }),
                         SizedBox(
