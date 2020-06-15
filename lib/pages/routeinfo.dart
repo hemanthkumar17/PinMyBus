@@ -139,10 +139,16 @@ class _RouteinfoState extends State<Routeinfo> {
   }
 
   Widget _buildContainer() {
-    String distance = '100m';
-    double stoplatitude = 0;
-    double stoplongitude = 0;
-    String stopname = 'this is the template remove the rest';
+    List<Widget> boxList = [];
+    for (var stop in widget.route.routeStops) {
+      boxList.add(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _boxes(stop.location.latitude, stop.location.longitude,
+              stop.stopName, stop.offset),
+        ),
+      );
+    }
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
@@ -150,42 +156,13 @@ class _RouteinfoState extends State<Routeinfo> {
         height: 150.0,
         child: ListView(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(stoplatitude, stoplongitude, stopname, distance),
-            ),
-            //below are not templates and can be deleted
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.320775, 75.933986, "Name of Start", '10m'),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.321742, 75.932980, "Name of End", '10m'),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.321742, 75.932980, "Name of End", '10m'),
-            )
-          ],
+          children: boxList,
         ),
       ),
     );
   }
 
-  Widget _boxes(
-    double lat,
-    double long,
-    String stopname,
-    String dist,
-  ) {
-    String timehr = "00";
-    String timemin = "00";
+  Widget _boxes(double lat, double long, String stopname, TimeOfDay offset) {
     return GestureDetector(
         onTap: () {
           _gotoLocation(lat, long);
@@ -198,7 +175,7 @@ class _RouteinfoState extends State<Routeinfo> {
               ),
               color: Color.fromRGBO(255, 171, 0, .9),
               child: Container(
-                width: 400,
+                width: 300,
                 child: Stack(
                   children: <Widget>[
                     SizedBox(
@@ -215,13 +192,7 @@ class _RouteinfoState extends State<Routeinfo> {
                                   stopname,
                                   style: TextStyle(),
                                 ))))),
-                    Align(
-                        alignment: Alignment(-.75, .40),
-                        child: Text('Distance:',
-                            style: TextStyle(
-                              fontSize: 10,
-                            ))),
-                    Align(alignment: Alignment(-.75, .80), child: Text(dist)),
+
                     Align(
                         alignment: Alignment(.75, .40),
                         child: Text(
@@ -233,7 +204,9 @@ class _RouteinfoState extends State<Routeinfo> {
                     Align(
                         alignment: Alignment(.75, .80),
                         child: Text(
-                          timehr + ':' + timemin,
+                          offset.hour.toString().padLeft(2, "0") +
+                              ':' +
+                              offset.minute.toString().padLeft(2, "0"),
                           style: TextStyle(fontSize: 15),
                         )),
                   ],
@@ -243,6 +216,30 @@ class _RouteinfoState extends State<Routeinfo> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
+    Set<Marker> markerStops = {};
+    for (var stop in widget.route.routeStops) {
+      markerStops.add(
+        Marker(
+          markerId: MarkerId(stop.stopid),
+          position: stop.location,
+          infoWindow: InfoWindow(title: stop.stopName),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueOrange,
+          ),
+        ),
+      );
+    }
+    markerStops.add(
+      Marker(
+        markerId: MarkerId('driver'),
+        position: LatLng(_location.latitude, _location.longitude),
+        infoWindow: InfoWindow(title: 'You'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueBlue,
+        ),
+      ),
+    );
+
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
@@ -253,37 +250,7 @@ class _RouteinfoState extends State<Routeinfo> {
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        markers: {
-          // startMarker,
-
-          Marker(
-            markerId: MarkerId('start'),
-            position: LatLng(11.320775, 75.933986),
-            infoWindow: InfoWindow(title: 'Name of Start'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueOrange,
-            ),
-          ),
-
-          // driverMarker,
-          Marker(
-            markerId: MarkerId('driver'),
-            position: LatLng(_location.latitude, _location.longitude),
-            infoWindow: InfoWindow(title: 'You'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue,
-            ),
-          ),
-          // endMarker,
-          Marker(
-            markerId: MarkerId('end'),
-            position: LatLng(11.321742, 75.932980),
-            infoWindow: InfoWindow(title: 'Name of End'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueOrange,
-            ),
-          )
-        },
+        markers: markerStops,
         onCameraMove: (CameraPosition position) {},
       ),
     );

@@ -30,7 +30,7 @@ class _BuslistStopState extends State<BuslistStop> {
           color: Color.fromRGBO(255, 171, 0, .9),
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/routeinfo');
+              Navigator.pushNamed(context, '/routeinfo', arguments: route);
             },
             child: Card(
                 child: Stack(

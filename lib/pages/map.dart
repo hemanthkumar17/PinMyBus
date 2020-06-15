@@ -210,7 +210,7 @@ class MapPageState extends State<MapPage> {
               ),
               color: Color.fromRGBO(255, 171, 0, .9),
               child: Container(
-                width: 200,
+                width: 300,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
