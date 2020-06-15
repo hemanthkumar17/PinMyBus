@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "28735654339-9qnmtm1a2gpk8rmqmps7oq58fab3scer.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pinmybus",
+            "certificate_hash": "72c1ded77946e6f16bae38a1fb0bb02dd8aa6ec5"
+          }
+        },
+        {
           "client_id": "28735654339-i48nmjc3kdep6l1pn7vbf83f0dqkbjb7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
