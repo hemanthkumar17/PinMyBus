@@ -7,14 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/routes.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-class Map extends StatefulWidget {
+class MapPage extends StatefulWidget {
   @override
-  MapState createState() => MapState();
+  MapPageState createState() => MapPageState();
 }
 
-class MapState extends State<Map> {
+class MapPageState extends State<MapPage> {
   final Location location = Location();
   LocationData _location;
   StreamSubscription<LocationData> _locationSubscription;
@@ -216,17 +217,22 @@ class MapState extends State<Map> {
                     Text(dist),
                     RaisedButton(
                       onPressed: () async{
-                        // Map<String, dynamic> data = {
-                        //         "startStop": stopsComplete.firstWhere((element) => element.stopName == stopname).stopid,
-                        //       };
-                        //       print(data);
-                        //       final HttpsCallable callable =
-                        //           CloudFunctions.instance.getHttpsCallable(
-                        //               functionName: "searchRoutes");
-                        //       final HttpsCallableResult response =
-                        //           await callable.call(data);
-                        //           print(response);
-                        Navigator.pushNamed(context, '/buslist_stop');
+                        Map<String, dynamic> data = {
+                                "startStop": stopsComplete.firstWhere((element) => element.stopName == stopname).stopid,
+                              };
+                              print(data);
+                              final HttpsCallable callable =
+                                  CloudFunctions.instance.getHttpsCallable(
+                                      functionName: "searchRoutes");
+                              final HttpsCallableResult response =
+                                  await callable.call(data);
+                                  print(response);
+                        List<BusRoute> routeList = [];
+                        for (var route in response.data) {
+                                routeList.add(BusRoute.fromResponse(route));
+                                print(route);
+                              }
+                        Navigator.pushNamed(context, '/buslist_stop', arguments: routeList);
                       },
                       color: Colors.white,
                       child: Container(

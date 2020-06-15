@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pinmybus/models/routes.dart';
 
 class BuslistStop extends StatefulWidget {
-  BuslistStop({Key key}) : super(key: key);
+  final List<BusRoute> routeList;
+  BuslistStop(this.routeList, {Key key}) : super(key: key);
 
   @override
   _BuslistStopState createState() => _BuslistStopState();

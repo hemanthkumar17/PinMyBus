@@ -315,7 +315,7 @@ class _HomeState extends State<Home> {
                               }
                               print(routeList);
                               print(response.data);
-                              Navigator.pushNamed(context, '/buslist_route');
+                              Navigator.pushNamed(context, '/buslist_route', arguments: routeList);
                             }),
                         SizedBox(
                           height: 10,
