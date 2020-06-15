@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/routes.dart';
+import 'package:pinmybus/models/stops.dart';
 
 class BuslistStop extends StatefulWidget {
-  final List<BusRoute> routeList;
-  BuslistStop(this.routeList, {Key key}) : super(key: key);
+  final Map args;
+  BuslistStop({Key key, @required this.args}) : super(key: key);
 
   @override
   _BuslistStopState createState() => _BuslistStopState();
@@ -21,7 +22,9 @@ class _BuslistStopState extends State<BuslistStop> {
   List<Widget> routeWid = [];
 
   void createWid() {
-    for (var route in widget.routeList) {
+    routeWid = [];
+    for (BusRoute route in widget.args["routeList"]) {
+      Stop stop = route.routeStops.firstWhere((element) => element.stopName == widget.args["stopName"]);
       routeWid.add(Container(
           height: 100,
           color: Color.fromRGBO(255, 171, 0, .9),
@@ -44,7 +47,9 @@ class _BuslistStopState extends State<BuslistStop> {
                 Align(
                     alignment: Alignment(.75, -.60),
                     child: Text(
-                      timehr + ':' + timemin,
+                      stop.offset.hour.toString().padLeft(2, "0") +
+                          ':' +
+                          stop.offset.minute.toString().padLeft(2, "0"),
                       style: TextStyle(fontSize: 25),
                     )),
                 Align(
@@ -58,55 +63,40 @@ class _BuslistStopState extends State<BuslistStop> {
             )),
           )));
     }
+    print(routeWid);
+    if (routeWid.isEmpty)
+      {routeWid = [
+        Container(
+            height: 100,
+            color: Color.fromRGBO(255, 171, 0, .9),
+              child: Card(
+                  child: Center(
+                    child:Text("No routes exist",
+                    style: TextStyle(fontSize: 20)
+                  ),
+                  ),
+            ))  
+      ];
+      print("empty");
+      }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    createWid();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(stopname),
+          title: Text(widget.args["stopName"]),
           backgroundColor: Color.fromRGBO(255, 171, 0, .9),
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: <Widget>[
-              Container(
-                  height: 100,
-                  color: Color.fromRGBO(255, 171, 0, .9),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(context, '/routeinfo');
-                    },
-                    child: Card(
-                        child: Stack(
-                      children: <Widget>[
-                        SizedBox(
-                          width: double.infinity,
-                        ),
-                        Align(
-                            alignment: Alignment(-.75, -.60),
-                            child: Text(
-                              busname,
-                              style: TextStyle(fontSize: 25),
-                            )),
-                        Align(
-                            alignment: Alignment(.75, -.60),
-                            child: Text(
-                              timehr + ':' + timemin,
-                              style: TextStyle(fontSize: 25),
-                            )),
-                        Align(
-                          alignment: Alignment(-.75, .50),
-                          child: Text(
-                            bustype + ', ' + busnumber,
-                            style:
-                                TextStyle(fontSize: 15, color: Colors.black45),
-                          ),
-                        )
-                      ],
-                    )),
-                  ))
-            ] + routeWid,
+            children: routeWid,
           ),
         ));
   }

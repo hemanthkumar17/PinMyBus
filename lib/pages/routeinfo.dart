@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:pinmybus/models/routes.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Routeinfo extends StatefulWidget {
-  Routeinfo({Key key}) : super(key: key);
+  final BusRoute route;
+  Routeinfo({Key key, @required this.route}) : super(key: key);
 
   @override
   _RouteinfoState createState() => _RouteinfoState();
@@ -21,11 +23,13 @@ class _RouteinfoState extends State<Routeinfo> {
   Future<void> _listenLocation() async {
     _locationSubscription =
         location.onLocationChanged.handleError((dynamic err) {
+      if (!mounted) return;
       setState(() {
         _error = err.code;
       });
       _locationSubscription.cancel();
     }).listen((LocationData currentLocation) {
+      if (!mounted) return;
       setState(() {
         _error = null;
 
@@ -202,10 +206,15 @@ class _RouteinfoState extends State<Routeinfo> {
                     ),
                     Align(
                         alignment: Alignment(0, -.40),
-                        child: Card(child: Container(
-                          height : 50,
-                          width : 350,
-                          child: Center(child: Text(stopname,style: TextStyle(),))))),
+                        child: Card(
+                            child: Container(
+                                height: 50,
+                                width: 350,
+                                child: Center(
+                                    child: Text(
+                                  stopname,
+                                  style: TextStyle(),
+                                ))))),
                     Align(
                         alignment: Alignment(-.75, .40),
                         child: Text('Distance:',

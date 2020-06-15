@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/routes.dart';
+import 'package:pinmybus/models/userData.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MapPage extends StatefulWidget {
@@ -22,11 +23,13 @@ class MapPageState extends State<MapPage> {
   Future<void> _listenLocation() async {
     _locationSubscription =
         location.onLocationChanged.handleError((dynamic err) {
+      if (!mounted) return;
       setState(() {
         _error = err.code;
       });
       _locationSubscription.cancel();
     }).listen((LocationData currentLocation) {
+      if (!mounted) return;
       setState(() {
         _error = null;
 
@@ -121,6 +124,15 @@ class MapPageState extends State<MapPage> {
                 child: Container(
                   width: 50,
                   height: 50,
+                //   decoration: BoxDecoration(
+                //       color: Color.fromRGBO(255, 171, 0, .9),
+                //       shape: BoxShape.circle),
+                //   child: IconButton(
+                //     icon: Icon(Icons.my_location),
+                //     iconSize: 30,
+                //     onPressed: () =>
+                //         _gotoLocation(_location.latitude, _location.longitude),
+                //   ),
                   child: RaisedButton(
                       child: Center(
                           child: Icon(
@@ -162,9 +174,10 @@ class MapPageState extends State<MapPage> {
     for (var stop in stopsComplete) {
       boxList.add(
         Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(stop.location.latitude, stop.location.longitude, stop.stopName),
-            ),
+          padding: const EdgeInsets.all(8.0),
+          child: _boxes(
+              stop.location.latitude, stop.location.longitude, stop.stopName),
+        ),
       );
     }
     return Align(
@@ -221,12 +234,17 @@ class MapPageState extends State<MapPage> {
                             await callable.call(data);
                         print(response);
                         List<BusRoute> routeList = [];
+                        List<Data> userData = [];
                         for (var route in response.data) {
                           routeList.add(BusRoute.fromResponse(route));
                           print(route);
                         }
                         Navigator.pushNamed(context, '/buslist_stop',
-                            arguments: routeList);
+                            arguments: {
+                              "routeList": routeList,
+                              "stopName": stopname,
+                              "userData": userData
+                            });
                       },
                       color: Colors.white,
                       child: Container(
