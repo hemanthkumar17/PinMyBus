@@ -23,7 +23,7 @@ class PinMyBusApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Pin My Bus",
-      home: Remind(),
+      home: Login(),
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.orange),
       routes: {
         '/login': (context) => Login(),

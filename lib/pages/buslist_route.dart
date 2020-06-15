@@ -30,6 +30,7 @@ class _BuslistRouteState extends State<BuslistRoute> {
 
   void createWid() {
     for (var route in widget.routeList) {
+      print(route.end.offset);
       routeWid.add(Container(
           height: 100,
           color: Color.fromRGBO(255, 171, 0, .9),

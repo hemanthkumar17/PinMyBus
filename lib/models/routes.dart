@@ -15,8 +15,21 @@ class BusRoute {
   List<Stop> routeStops;
   TimeOfDay startTime;
   String ownerId;
-  Map toJson() => jsonDecode(jsonEncode(Route));
+
   BusRoute(this.name, this.recMode, this.recList);
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'recMode': recMode.toString().substring(8),
+        'start': start.toJson(),
+        'end': end.toJson(),
+        'recList': recList,
+        'routeStops': routeStops.map((e) => e.toJson()).toList(),
+        'startTime': startTime.hour.toString().padLeft(2, '0') +
+            startTime.minute.toString().padLeft(2, '0'),
+        'ownerId': ownerId,
+      };
+
   BusRoute.fromResponse(response) {
     this.name = response["name"];
     switch (response["recMode"]) {
@@ -30,17 +43,26 @@ class BusRoute {
         this.recMode = RecMode.MONTHLY;
         break;
     }
-    print(response["startTime"]);
+
     this.recList = response["recList"].cast<String>();
+
+    String startTimeTemp = response["startTime"].padLeft(4, "0");
     this.startTime = TimeOfDay(
-        hour: int.parse(response["startTime"].toString().substring(0, 2).padLeft(2, "0")),
-        minute: int.parse(response["startTime"].toString().substring(2).padLeft(2, "0")));
+        hour: int.parse(startTimeTemp.substring(0, 2)),
+        minute: int.parse(startTimeTemp.substring(2)));
+
     this.ownerId = response["ownerId"];
+
     this.routeStops = [];
+
     for (var stop in response["routeStops"]) {
-      print(stop["stopId"]);
-      print(stopsComplete.firstWhere((element) => element.stopid == stop["stopId"]));
-      this.routeStops.add(stopsComplete.firstWhere((element) => element.stopid == stop["stopId"]));
+      this.routeStops.add(stopsComplete
+          .firstWhere((element) => element.stopid == stop["stopId"]));
+
+      String timeOfArrival = stop["timeOfArrival"].toString().padLeft(4, "0");
+      this.routeStops.last.offset = TimeOfDay(
+          hour: int.parse(timeOfArrival.substring(0, 2)),
+          minute: int.parse(timeOfArrival.substring(2)));
     }
     this.start = routeStops.first;
     this.end = routeStops.last;

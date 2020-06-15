@@ -1,6 +1,4 @@
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:cloud_functions/cloud_functions.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/delayed_animation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -22,25 +20,6 @@ class _LoginState extends State<Login> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> _getStops() async {
-    // FirebaseAuth _auth = FirebaseAuth.instance;
-    // await _auth.signInWithEmailAndPassword(email: "admin@anandu.net", password: "password");
-    final HttpsCallable callable =
-        CloudFunctions.instance.getHttpsCallable(functionName: "listStops");
-    HttpsCallableResult response = await callable.call();
-    print(response.data);
-    stopsComplete = [];
-    for (var item in response.data['stops']) {
-      stopsComplete.add(Stop(
-          item['name'],
-          item["_id"],
-          LatLng(double.parse(item['location']['coordinates'][0].toString()),
-              double.parse(item['location']['coordinates'][1].toString()))));
-    }
-    print(stopsComplete);
-    // print(stops);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -59,7 +38,7 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    _getStops();
+    await GlobalFunctions.getStops();
     _initializeData(user); //*
     return user;
   }

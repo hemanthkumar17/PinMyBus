@@ -1,4 +1,6 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'stops.dart';
 
 const URL = "https://us-central1-pinmybus-staging.cloudfunctions.net";
@@ -7,5 +9,24 @@ List<Stop> stopsComplete;
 class GlobalFunctions {
   static void printError(String error, GlobalKey<ScaffoldState> key) {
     key.currentState.showSnackBar(SnackBar(content: Text(error)));
+  }
+
+  static Future<void> getStops() async {
+    // FirebaseAuth _auth = FirebaseAuth.instance;
+    // await _auth.signInWithEmailAndPassword(email: "admin@anandu.net", password: "password");
+    final HttpsCallable callable =
+        CloudFunctions.instance.getHttpsCallable(functionName: "listStops");
+    HttpsCallableResult response = await callable.call({});
+    print(response.data);
+    stopsComplete = [];
+    for (var item in response.data['stops']) {
+      stopsComplete.add(Stop(
+          item['name'],
+          item["_id"],
+          LatLng(double.parse(item['location']['coordinates'][0].toString()),
+              double.parse(item['location']['coordinates'][1].toString()))));
+    }
+    print(stopsComplete);
+    // print(stops);
   }
 }

@@ -296,8 +296,14 @@ class _HomeState extends State<Home> {
                                 ))),
                             onPressed: () async {
                               Map<String, dynamic> data = {
-                                "startStop": stopsComplete.firstWhere((element) => element.stopName == start).stopid,
-                                "endStop": stopsComplete.firstWhere((element) => element.stopName == start).stopid,
+                                "startStop": stopsComplete
+                                    .firstWhere(
+                                        (element) => element.stopName == start)
+                                    .stopid,
+                                "endStop": stopsComplete
+                                    .firstWhere(
+                                        (element) => element.stopName == start)
+                                    .stopid,
                                 "date":
                                     "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year.toString()}"
                               };
@@ -307,15 +313,15 @@ class _HomeState extends State<Home> {
                                       functionName: "searchRoutes");
                               final HttpsCallableResult response =
                                   await callable.call(data);
-                                  List<BusRoute> routeList = [];
-                                  print(response.data);
+                              List<BusRoute> routeList = [];
+                              print(response.data);
+                              
                               for (var route in response.data) {
                                 routeList.add(BusRoute.fromResponse(route));
-                                print(route);
                               }
-                              print(routeList);
-                              print(response.data);
-                              Navigator.pushNamed(context, '/buslist_route', arguments: routeList);
+
+                              Navigator.pushNamed(context, '/buslist_route',
+                                  arguments: routeList);
                             }),
                         SizedBox(
                           height: 10,
