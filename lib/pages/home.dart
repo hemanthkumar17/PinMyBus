@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/models/stops.dart';
+import 'package:pinmybus/models/userData.dart';
 import 'package:pinmybus/widgets/search.dart';
 import 'package:http/http.dart' as http;
 
@@ -314,14 +315,15 @@ class _HomeState extends State<Home> {
                               final HttpsCallableResult response =
                                   await callable.call(data);
                               List<BusRoute> routeList = [];
+                              List<Data> userData = [];
                               print(response.data);
-                              
                               for (var route in response.data) {
                                 routeList.add(BusRoute.fromResponse(route));
+                                userData.add(Data(route['name']));
                               }
 
                               Navigator.pushNamed(context, '/buslist_route',
-                                  arguments: routeList);
+                                  arguments: {"routeList": routeList, "userData": userData});
                             }),
                         SizedBox(
                           height: 10,

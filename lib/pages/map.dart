@@ -43,7 +43,7 @@ class MapPageState extends State<MapPage> {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(CameraPosition(
       target: LatLng(lat, long),
-      zoom: 20,
+      zoom: 15,
       tilt: 50.0,
       bearing: 45.0,
     )));
@@ -158,6 +158,15 @@ class MapPageState extends State<MapPage> {
   }
 
   Widget _buildContainer() {
+    List<Widget> boxList = [];
+    for (var stop in stopsComplete) {
+      boxList.add(
+        Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: _boxes(stop.location.latitude, stop.location.longitude, stop.stopName),
+            ),
+      );
+    }
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
@@ -165,32 +174,16 @@ class MapPageState extends State<MapPage> {
         height: 150.0,
         child: ListView(
           scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.320775, 75.933986, "Name of Start", '10m'),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.321742, 75.932980, "Name of End", '10m'),
-            ),
-            SizedBox(width: 10.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _boxes(11.321742, 75.932980, "Name of End", '10m'),
-            )
-          ],
+          children: boxList,
         ),
       ),
     );
   }
+
   Widget _boxes(
     double lat,
     double long,
     String stopname,
-    String dist,
   ) {
     return GestureDetector(
         onTap: () {
@@ -212,25 +205,28 @@ class MapPageState extends State<MapPage> {
                       height: 10,
                     ),
                     Text(stopname),
-                    Text(dist),
                     RaisedButton(
-                      onPressed: () async{
+                      onPressed: () async {
+                        _stopListen();
                         Map<String, dynamic> data = {
-                                "startStop": stopsComplete.firstWhere((element) => element.stopName == stopname).stopid,
-                              };
-                              print(data);
-                              final HttpsCallable callable =
-                                  CloudFunctions.instance.getHttpsCallable(
-                                      functionName: "searchRoutes");
-                              final HttpsCallableResult response =
-                                  await callable.call(data);
-                                  print(response);
+                          "startStop": stopsComplete
+                              .firstWhere(
+                                  (element) => element.stopName == stopname)
+                              .stopid,
+                        };
+                        print(data);
+                        final HttpsCallable callable = CloudFunctions.instance
+                            .getHttpsCallable(functionName: "searchRoutes");
+                        final HttpsCallableResult response =
+                            await callable.call(data);
+                        print(response);
                         List<BusRoute> routeList = [];
                         for (var route in response.data) {
-                                routeList.add(BusRoute.fromResponse(route));
-                                print(route);
-                              }
-                        Navigator.pushNamed(context, '/buslist_stop', arguments: routeList);
+                          routeList.add(BusRoute.fromResponse(route));
+                          print(route);
+                        }
+                        Navigator.pushNamed(context, '/buslist_stop',
+                            arguments: routeList);
                       },
                       color: Colors.white,
                       child: Container(
@@ -254,47 +250,41 @@ class MapPageState extends State<MapPage> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
+    Set<Marker> markerStops = {};
+    for (var stop in stopsComplete) {
+      markerStops.add(
+        Marker(
+          markerId: MarkerId(stop.stopid),
+          position: stop.location,
+          infoWindow: InfoWindow(title: stop.stopName),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueOrange,
+          ),
+        ),
+      );
+    }
+    markerStops.add(
+      Marker(
+        markerId: MarkerId('driver'),
+        position: LatLng(_location.latitude, _location.longitude),
+        infoWindow: InfoWindow(title: 'You'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueBlue,
+        ),
+      ),
+    );
+
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GoogleMap(
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(
-            target: LatLng(_location.latitude, _location.longitude), zoom: 20),
+            target: LatLng(_location.latitude, _location.longitude), zoom: 15),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        markers: {
-          // startMarker,
-
-          Marker(
-            markerId: MarkerId('start'),
-            position: LatLng(11.320775, 75.933986),
-            infoWindow: InfoWindow(title: 'Name of Start'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueOrange,
-            ),
-          ),
-
-          // driverMarker,
-          Marker(
-            markerId: MarkerId('driver'),
-            position: LatLng(_location.latitude, _location.longitude),
-            infoWindow: InfoWindow(title: 'You'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue,
-            ),
-          ),
-          // endMarker,
-          Marker(
-            markerId: MarkerId('end'),
-            position: LatLng(11.321742, 75.932980),
-            infoWindow: InfoWindow(title: 'Name of End'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueOrange,
-            ),
-          )
-        },
+        markers: markerStops,
         onCameraMove: (CameraPosition position) {},
       ),
     );

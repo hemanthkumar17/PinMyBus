@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/routes.dart';
+import 'package:pinmybus/models/userData.dart';
 
 class BuslistRoute extends StatefulWidget {
-  final List<BusRoute> routeList;
-  BuslistRoute(this.routeList, {Key key}) : super(key: key);
+
+  final Map args;
+  BuslistRoute({Key key, @required this.args}) : super(key: key);
 
   @override
   _BuslistRouteState createState() => _BuslistRouteState();
@@ -29,8 +32,10 @@ class _BuslistRouteState extends State<BuslistRoute> {
   }
 
   void createWid() {
-    for (var route in widget.routeList) {
-      print(route.end.offset);
+  List<BusRoute> routeList = widget.args["routeList"];
+  List<Data> userData = widget.args["userData"];
+    routeWid = [];
+    for (var route in routeList) {
       routeWid.add(Container(
           height: 100,
           color: Color.fromRGBO(255, 171, 0, .9),
@@ -89,6 +94,32 @@ class _BuslistRouteState extends State<BuslistRoute> {
             )),
           )));
     }
+    if (routeWid == [])
+      routeWid = [
+        Container(
+            height: 100,
+            color: Color.fromRGBO(255, 171, 0, .9),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/routeinfo');
+              },
+              child: Card(
+                  child: Stack(
+                children: <Widget>[
+                  SizedBox(
+                    width: double.infinity,
+                  ),
+                  Align(
+                    alignment: Alignment(-.75, .50),
+                    child: Text(
+                      "No routes exist",
+                      style: TextStyle(fontSize: 15, color: Colors.black45),
+                    ),
+                  )
+                ],
+              )),
+            ))
+      ];
   }
 
   @override
@@ -100,63 +131,7 @@ class _BuslistRouteState extends State<BuslistRoute> {
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: <Widget>[
-                  Container(
-                      height: 100,
-                      color: Color.fromRGBO(255, 171, 0, .9),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(context, '/routeinfo');
-                        },
-                        child: Card(
-                            child: Stack(
-                          children: <Widget>[
-                            SizedBox(
-                              width: double.infinity,
-                            ),
-                            Align(
-                                alignment: Alignment(-.75, -.60),
-                                child: Text(
-                                  busname,
-                                  style: TextStyle(fontSize: 25),
-                                )),
-                            Align(
-                                alignment: Alignment(.30, -.50),
-                                child: Text(
-                                  "Departure :",
-                                  style: TextStyle(fontSize: 10),
-                                )),
-                            Align(
-                                alignment: Alignment(.75, -.60),
-                                child: Text(
-                                  deptimehr + ':' + deptimemin,
-                                  style: TextStyle(fontSize: 25),
-                                )),
-                            Align(
-                                alignment: Alignment(.35, .4),
-                                child: Text(
-                                  'Arrival: ',
-                                  style: TextStyle(fontSize: 10),
-                                )),
-                            Align(
-                                alignment: Alignment(.75, .5),
-                                child: Text(
-                                  arrtimehr + ':' + arrtimemin,
-                                  style: TextStyle(fontSize: 25),
-                                )),
-                            Align(
-                              alignment: Alignment(-.75, .50),
-                              child: Text(
-                                bustype + ', ' + busnumber,
-                                style: TextStyle(
-                                    fontSize: 15, color: Colors.black45),
-                              ),
-                            )
-                          ],
-                        )),
-                      )),
-                ] +
-                routeWid,
+            children: routeWid,
           ),
         ));
   }

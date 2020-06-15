@@ -30,7 +30,7 @@ class PinMyBusApp extends StatelessWidget {
         '/home' : (context) => Home(ModalRoute.of(context).settings.arguments),
         '/map':(context) => MapPage(),
         '/buslist_stop':(context) => BuslistStop(ModalRoute.of(context).settings.arguments),
-        '/buslist_route':(context) => BuslistRoute(ModalRoute.of(context).settings.arguments),
+        '/buslist_route':(context) => BuslistRoute(),
         '/routeinfo' :(context) => Routeinfo(),
         '/suggest' : (context) => MapPickerPage(),
         '/insti' : (context) => Instituitional(),
