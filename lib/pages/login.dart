@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
     await GlobalFunctions.getStops();
-    _initializeData(user); //*
+    await _initializeData(user); //*
     return user;
   }
 

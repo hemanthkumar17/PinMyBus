@@ -209,6 +209,24 @@ class _RouteinfoState extends State<Routeinfo> {
                               offset.minute.toString().padLeft(2, "0"),
                           style: TextStyle(fontSize: 15),
                         )),
+                    Align(
+                      alignment: Alignment(-.80, .90),
+                      child:Container(
+                    child: RaisedButton(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Container(
+                      height: 30,
+                      width: 80,
+                      child: Center(
+                          child: Text(
+                        "Set a Reminder",
+                        style: TextStyle(fontSize: 11, color: Colors.black),
+                      ))),
+                  onPressed: () {
+                  },
+                ))),
                   ],
                 ),
               )),
