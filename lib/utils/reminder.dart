@@ -3,12 +3,15 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pinmybus/models/stops.dart';
 import 'package:rxdart/subjects.dart';
+
+import 'package:pinmybus/models/routes.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -36,18 +39,55 @@ class ReceivedNotification {
   });
 }
 
-/// IMPORTANT: running the following code on its own won't work as there is setup required for each platform head project.
-/// Please download the complete example app from the GitHub repository where all the setup has been done
+DateTime scheduleDate = DateTime.now();
+
+Map<String, Day> days = {
+  '0': Day.Sunday,
+  '1': Day.Monday,
+  '2': Day.Tuesday,
+  '3': Day.Wednesday,
+  '4': Day.Thursday,
+  '5': Day.Friday,
+  '6': Day.Saturday,
+};
+
+BusRoute mockRoute;
+
+BusRoute initMockRoute() {
+  BusRoute temp = BusRoute(
+    "Route_1",
+    RecMode.ONE_OFF,
+    ['0', '1', '2'],
+  );
+  var tempStops = <Stop>[];
+  var min = 0;
+  var hour = 0;
+  for (int i = 0; i < 5; i += 1) {
+    Stop tempStop = Stop("Stop_$i", "$i", LatLng(0, 0));
+    hour = ((i * 1) / 60).floor();
+    min = (i * 1) % 60;
+    tempStop.offset = TimeOfDay(
+      hour: hour,
+      minute: min,
+    );
+    tempStops.add(tempStop);
+  }
+  temp.startTime = TimeOfDay(
+    hour: 2,
+    minute: 14,
+  );
+  temp.routeStops = tempStops;
+  return temp;
+}
+
 Future<bool> init() async {
-  // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
+  mockRoute = initMockRoute();
 
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
   var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
-  // of the `IOSFlutterLocalNotificationsPlugin` class
   var initializationSettingsIOS = IOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -55,17 +95,25 @@ Future<bool> init() async {
       onDidReceiveLocalNotification:
           (int id, String title, String body, String payload) async {
         didReceiveLocalNotificationSubject.add(ReceivedNotification(
-            id: id, title: title, body: body, payload: payload));
+          id: id,
+          title: title,
+          body: body,
+          payload: payload,
+        ));
       });
   var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
-    selectNotificationSubject.add(payload);
-  });
+    initializationSettingsAndroid,
+    initializationSettingsIOS,
+  );
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onSelectNotification: (String payload) async {
+      if (payload != null) {
+        debugPrint('notification payload: ' + payload);
+      }
+      selectNotificationSubject.add(payload);
+    },
+  );
   print("InitDone");
   return true;
 }
@@ -125,8 +173,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _requestIOSPermissions();
-    _configureDidReceiveLocalNotificationSubject();
-    _configureSelectNotificationSubject();
   }
 
   void _requestIOSPermissions() {
@@ -140,56 +186,12 @@ class _HomePageState extends State<HomePage> {
         );
   }
 
-  void _configureDidReceiveLocalNotificationSubject() {
-    didReceiveLocalNotificationSubject.stream
-        .listen((ReceivedNotification receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body)
-              : null,
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text('Ok'),
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        SecondScreen(receivedNotification.payload),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      );
-    });
-  }
-
-  void _configureSelectNotificationSubject() {
-    selectNotificationSubject.stream.listen((String payload) async {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SecondScreen(payload)),
-      );
-    });
-  }
-
   @override
   void dispose() {
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
     super.dispose();
   }
-
-  DateTime scheduleDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -251,66 +253,59 @@ class _HomePageState extends State<HomePage> {
                       context,
                       onChanged: (date) {
                         scheduleDate = date;
-                        print("Selected $date");
                       },
                       onConfirm: (date) {
                         setState(() {
                           scheduleDate = date;
                         });
-                        print("Confirmed $date");
                       },
                       currentTime: scheduleDate,
                     ),
                   ),
                   Text(scheduleDate.toString()),
                   PaddedRaisedButton(
+                    buttonText: 'Add RouteSchedule',
+                    onPressed: () async {
+                      await Scheduler._addRouteNotification(
+                        mockRoute,
+                        date: DateTime.now(),
+                      );
+                    },
+                  ),
+                  PaddedRaisedButton(
                     buttonText: 'Add Notification',
                     onPressed: () async {
-                      await _addNotification(scheduleDate);
+                      await Scheduler._addNotification(
+                        scheduleDate,
+                        'busName',
+                        Stop("stopName", "1", LatLng(0, 0)),
+                      );
                     },
                   ),
                   PaddedRaisedButton(
                     buttonText: 'Cancel notification',
                     onPressed: () async {
-                      await _cancelNotification(0);
+                      await Scheduler._cancelNotification(0);
                     },
                   ),
                   PaddedRaisedButton(
                     buttonText:
                         'Repeat notification every day at $scheduleDate',
                     onPressed: () async {
-                      await _addDailyAtTime();
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText:
-                        'Repeat notification weekly on Monday at $scheduleDate',
-                    onPressed: () async {
-                      await _addWeeklyAtDayAndTime();
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Show insistent notification [Android]',
-                    onPressed: () async {
-                      await _showInsistentNotification();
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Show ongoing notification [Android]',
-                    onPressed: () async {
-                      await _showOngoingNotification();
+                      await Scheduler._addDailyAtTime();
                     },
                   ),
                   PaddedRaisedButton(
                     buttonText: 'Check pending notifications',
                     onPressed: () async {
-                      await _checkPendingNotificationRequests();
+                      await Scheduler._checkPendingNotificationRequests(
+                          context);
                     },
                   ),
                   PaddedRaisedButton(
                     buttonText: 'Cancel all notifications',
                     onPressed: () async {
-                      await _cancelAllNotifications();
+                      await Scheduler._cancelAllNotifications();
                     },
                   ),
                 ],
@@ -321,50 +316,148 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+}
 
-  Future<void> _addNotification(date) async {
+class Scheduler {
+  static void initNotifications() async {
+    await init();
+  }
+
+  static double toDouble(DateTime date) {
+    double ans = 0;
+    ans += date.hour * 3600 + date.minute * 60 + date.second;
+    return ans;
+  }
+
+  static bool check(DateTime date) {
+    var now = DateTime.now().subtract(Duration(minutes: 5));
+    if (toDouble(date) > toDouble(now)) return true;
+    return false;
+  }
+
+  static Future<void> _addRouteNotification(BusRoute route,
+      {DateTime date}) async {
+    if (route.recMode == RecMode.ONE_OFF)
+      await _addOneRouteNotification(route, date);
+    else if (route.recMode == RecMode.WEEKLY) {
+      var dayList = <Day>[];
+      route.recList.forEach((day) {
+        dayList.add(days[day]);
+      });
+      await _addWeeklyRouteNotification(route, dayList);
+    }
+  }
+
+  static Future<void> _addOneRouteNotification(
+      BusRoute route, DateTime routeDate) async {
+    var stops = route.routeStops;
+    TimeOfDay time = route.startTime;
+    DateTime startTime = DateTime(
+      routeDate.year,
+      routeDate.month,
+      routeDate.day,
+      time.hour,
+      time.minute,
+    );
+    startTime = startTime.subtract(Duration(minutes: 5));
+    DateTime scheduleDate;
+    Stop stop;
+    for (int i = 0; i < stops.length; i += 1) {
+      stop = stops[i];
+      scheduleDate = startTime.add(
+        Duration(
+          hours: stop.offset.hour,
+          minutes: stop.offset.minute,
+        ),
+      );
+      if (check(scheduleDate))
+        await _addNotification(
+          scheduleDate,
+          route.name,
+          stop,
+        );
+    }
+    await _showScheduleDone(route.name);
+  }
+
+  static Future<void> _addWeeklyRouteNotification(
+      BusRoute route, List<Day> dayList) async {
+    Day day;
+    Stop stop;
+    TimeOfDay startTime = route.startTime;
+    for (int i = 0; i < dayList.length; i += 1) {
+      day = dayList[i];
+      for (int j = 0; j < route.routeStops.length; j += 1) {
+        stop = route.routeStops[j];
+        await _addWeeklyAtDayAndTime(
+            stop,
+            Time(
+              startTime.hour + stop.offset.hour,
+              startTime.minute + stop.offset.minute,
+              0,
+            ),
+            day);
+      }
+    }
+    await _showScheduleDone(route.name) ;
+  }
+
+  static Future<void> _addMonthlyRouteNotification(BusRoute route) async {}
+
+  static Future<void> _addNotification(
+      DateTime date, String no, Stop stop) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max, priority: Priority.High, ticker: 'ticker');
+      'PinMyBus',
+      'PinMyBusChannel',
+      'PinMyBus Notification Channel',
+      importance: Importance.Max,
+      priority: Priority.High,
+      ticker: 'ticker',
+    );
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    //await flutterLocalNotificationsPlugin.show(
-    //    0, 'plain title', 'plain body', platformChannelSpecifics,
-    //    payload: 'item x');
     var scheduleDate = date;
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     var id = pending.length;
+    id += 1;
     await flutterLocalNotificationsPlugin.schedule(
-        id, "New Title", "New Body", scheduleDate, platformChannelSpecifics,
-        payload: "Plain Text", androidAllowWhileIdle: true);
-    print(scheduleDate);
+      id,
+      "Reminder ${stop.stopName}",
+      "Bus $no Will Reach Stop ${stop.stopName} In 5 mins",
+      scheduleDate,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+    );
   }
 
-  Future<void> _cancelNotification(int id) async {
-    await flutterLocalNotificationsPlugin.cancel(id);
-    print("Notification 0 Cancelled");
-  }
-
-  Future<void> _showInsistentNotification() async {
-    // This value is from: https://developer.android.com/reference/android/app/Notification.html#FLAG_INSISTENT
-    var insistentFlag = 4;
+  static Future<void> _showScheduleDone(String name) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max,
-        priority: Priority.High,
-        ticker: 'ticker',
-        additionalFlags: Int32List.fromList([insistentFlag]));
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+      'PinMyBus',
+      'PinMyBusChannel',
+      'PinMyBus Notification Channel',
+      playSound: true,
+      styleInformation: DefaultStyleInformation(true, true),
+    );
+    var iOSPlatformChannelSpecifics =
+        IOSNotificationDetails(presentSound: false);
     var platformChannelSpecifics = NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(
-        0, 'insistent title', 'insistent body', platformChannelSpecifics,
-        payload: 'item x');
+      0,
+      '<b>Reminder</b>',
+      'Schedule for $name Set',
+      platformChannelSpecifics,
+    );
   }
 
-  Future<void> _checkPendingNotificationRequests() async {
+  static Future<void> _cancelNotification(int id) async {
+    await flutterLocalNotificationsPlugin.cancel(id);
+    print("Notification $id Cancelled");
+  }
+
+  static Future<void> _checkPendingNotificationRequests(context) async {
     var pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     var list = <Widget>[];
@@ -396,103 +489,63 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<void> _cancelAllNotifications() async {
+  static Future<void> _cancelAllNotifications() async {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
-  Future<void> _showOngoingNotification() async {
+  static Future<void> _addDailyAtTime() async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'your channel id', 'your channel name', 'your channel description',
-        importance: Importance.Max,
-        priority: Priority.High,
-        ongoing: true,
-        autoCancel: false);
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(0, 'ongoing notification title',
-        'ongoing notification body', platformChannelSpecifics);
-  }
-
-  Future<void> _addDailyAtTime() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'repeatDailyAtTime channel id',
-        'repeatDailyAtTime channel name',
-        'repeatDailyAtTime description');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    var time =
-        Time(scheduleDate.hour, scheduleDate.minute, scheduleDate.second);
-    var pending =
-        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length;
-    await flutterLocalNotificationsPlugin.showDailyAtTime(
-        id,
-        'show daily title',
-        'Daily notification shown at approximately ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}:${_toTwoDigitString(time.second)}',
-        time,
-        platformChannelSpecifics);
-  }
-
-  Future<void> _addWeeklyAtDayAndTime() async {
-    var time =
-        Time(scheduleDate.hour, scheduleDate.minute, scheduleDate.second);
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'show weekly channel id',
-        'show weekly channel name',
-        'show weekly description');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    var pending =
-        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length;
-    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-        id,
-        'show weekly title',
-        'Weekly notification shown on Monday at approximately ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}:${_toTwoDigitString(time.second)}',
-        Day.Monday,
-        time,
-        platformChannelSpecifics);
-  }
-
-  String _toTwoDigitString(int value) {
-    return value.toString().padLeft(2, '0');
-  }
-}
-
-class SecondScreen extends StatefulWidget {
-  SecondScreen(this.payload);
-
-  final String payload;
-
-  @override
-  State<StatefulWidget> createState() => SecondScreenState();
-}
-
-class SecondScreenState extends State<SecondScreen> {
-  String _payload;
-  @override
-  void initState() {
-    super.initState();
-    _payload = widget.payload;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Second Screen with payload: ${(_payload ?? '')}'),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
-        ),
-      ),
+      'PinMyBus',
+      'PinMyBusChannel',
+      'PinMyBus Notification Channel',
     );
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+      androidPlatformChannelSpecifics,
+      iOSPlatformChannelSpecifics,
+    );
+    var time =
+        Time(scheduleDate.hour, scheduleDate.minute, scheduleDate.second);
+    var pending =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    var id = pending.length;
+    id += 1;
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+      id,
+      'show daily title',
+      'Daily notification shown at approximately ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}:${_toTwoDigitString(time.second)}',
+      time,
+      platformChannelSpecifics,
+    );
+  }
+
+  static Future<void> _addWeeklyAtDayAndTime(
+      Stop stop, Time time, Day day) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'PinMyBus',
+      'PinMyBusChannel',
+      'PinMyBus Notification Channel',
+    );
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+      androidPlatformChannelSpecifics,
+      iOSPlatformChannelSpecifics,
+    );
+    var pending =
+        await flutterLocalNotificationsPlugin.pendingNotificationRequests();
+    var id = pending.length;
+    id += 1;
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+      id,
+      'Reminder ${stop.stopName}',
+      "Bus busName Will Reach Stop ${stop.stopName} In 5 mins",
+      day,
+      time,
+      platformChannelSpecifics,
+    );
+  }
+
+  static String _toTwoDigitString(int value) {
+    return value.toString().padLeft(2, '0');
   }
 }

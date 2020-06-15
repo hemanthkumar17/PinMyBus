@@ -8,6 +8,7 @@ import 'package:pinmybus/pages/login.dart';
 import 'package:pinmybus/pages/map.dart';
 import 'package:pinmybus/pages/routeinfo.dart';
 import 'package:pinmybus/pages/suggeststop.dart';
+import 'package:pinmybus/utils/reminder.dart' ;
 
 void main() async {
   runApp(PinMyBusApp());
@@ -22,7 +23,7 @@ class PinMyBusApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Pin My Bus",
-      home: Login(),
+      home: Remind(),
       theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.orange),
       routes: {
         '/login': (context) => Login(),
@@ -33,6 +34,7 @@ class PinMyBusApp extends StatelessWidget {
         '/routeinfo' :(context) => Routeinfo(),
         '/suggest' : (context) => MapPickerPage(),
         '/insti' : (context) => Instituitional(),
+        '/remind' : (context) => Remind() ,
        },
     );
   }
