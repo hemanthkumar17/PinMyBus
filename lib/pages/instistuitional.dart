@@ -35,11 +35,44 @@ class Instituitional extends StatelessWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'Enter Code of the Bus',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
+                  Container(
+                    width: 350,
+                    child: InkWell(
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.white70, width: 1),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          color: Colors.white,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                InkWell(
+                                    child: Container(
+                                        height: 50,
+                                        child: Row(children: <Widget>[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 10)),
+                                          Icon(Icons.search),
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 20)),
+                                          Text('Instituition Name',
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                color: Colors.black,
+                                              )),
+                                        ])),
+                                    onTap: () {
+                                      // searchStop(context, true);
+                                    }),
+                                // startCancel
+                              ]),
+                        ),
+                        onTap: () {
+                          // searchStop(context, true);
+                        }),
                   ),
                   SizedBox(
                     height: 10,
@@ -91,7 +124,7 @@ class Instituitional extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20)),
                   ),
                   SizedBox(
-                    height : 10,
+                    height: 10,
                   )
                 ],
               )
