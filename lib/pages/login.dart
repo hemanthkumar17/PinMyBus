@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/stops.dart';
+
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
 
@@ -16,6 +19,11 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Future<FirebaseUser> _handleSignIn() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
@@ -30,7 +38,8 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    _initializeData(user); //*
+    await GlobalFunctions.getStops();
+    await _initializeData(user); //*
     return user;
   }
 
@@ -38,12 +47,22 @@ class _LoginState extends State<Login> {
 
   Future<void> _initializeData(FirebaseUser user) async {
     final FirebaseDatabase dataBase = FirebaseDatabase.instance;
-    dataBase
+    await dataBase
         .reference()
-        .child("Drivers")
+        .child("userInfo")
         .child(user.uid)
-        .child("Approval")
-        .set("No");
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value == null) {
+        dataBase.reference().child("userInfo").child(user.uid).set({
+          "contactNumber": "",
+          "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
+          "email": user.email,
+          "status": "active",
+          "userType": "default",
+        });
+      }
+    });
   }
 //*
 
@@ -51,7 +70,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     final color = Colors.black;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(255, 215, 0, .9),
+      backgroundColor: Colors.white,
       body: Container(
         child: Center(
           child: Column(
@@ -59,23 +78,22 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               AvatarGlow(
-                endRadius: 150,
-                duration: Duration(seconds: 2),
-                glowColor: Colors.white24,
-                repeat: true,
-                repeatPauseDuration: Duration(seconds: 2),
-                startDelay: Duration(seconds: 1),
-                child: Material(
-                    elevation: 8.0,
-                    shape: CircleBorder(),
-                    child: CircleAvatar(
-                      radius: 80,
-                        backgroundColor: Colors.white,
-                        // backgroundImage: NetworkImage('https://media.gettyimages.com/vectors/bus-with-navigation-location-map-pin-icon-vector-illustration-vector-id1208844814'),
-                        child: Icon(IconData(58672, fontFamily: 'MaterialIcons')
-                        ,size: 100,
-                        color: Color.fromRGBO(255, 215, 0, .9),),
-                        ))),
+                  endRadius: 150,
+                  duration: Duration(seconds: 2),
+                  glowColor: Color.fromRGBO(255, 171, 0, .9),
+                  repeat: true,
+                  repeatPauseDuration: Duration(seconds: 2),
+                  startDelay: Duration(seconds: 1),
+                  child: Container(
+                      width: 150,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          // color: Colors.white,
+                          borderRadius: BorderRadius.circular(100)),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                      ))),
               DelayedAnimation(
                 child: Text(
                   "PinMyBus",
@@ -100,6 +118,9 @@ class _LoginState extends State<Login> {
                 height: 30.0,
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
+              RaisedButton(onPressed: () {
+                Navigator.pushNamed(context, '/home', arguments: null);
+              })
             ],
           ),
         ),
@@ -118,9 +139,9 @@ class _LoginState extends State<Login> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
         onPressed: () {
           _handleSignIn()
-              .then((FirebaseUser user) => print(user))
+              .then((FirebaseUser user) =>
+                  Navigator.pushNamed(context, '/home', arguments: user))
               .catchError((e) => print(e));
-          //Finish the OAuth consent to not get API Exception
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
@@ -128,7 +149,8 @@ class _LoginState extends State<Login> {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image(image: AssetImage("assets/google.png"), height: 35.0),
+              Image(
+                  image: AssetImage("assets/images/google.png"), height: 35.0),
             ],
           ),
         ),
