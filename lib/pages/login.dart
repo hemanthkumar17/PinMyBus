@@ -58,7 +58,6 @@ class _LoginState extends State<Login> {
         dataBase
             .reference()
             .child("userInfo")
-            .child("default")
             .child(user.uid)
             .set({
           "contactNumber": "",
