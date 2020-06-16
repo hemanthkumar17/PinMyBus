@@ -50,7 +50,6 @@ class _LoginState extends State<Login> {
     await dataBase
         .reference()
         .child("userInfo")
-        .child("default")
         .child(user.uid)
         .once()
         .then((DataSnapshot snapshot) {
