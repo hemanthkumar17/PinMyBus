@@ -62,7 +62,7 @@ class _LoginState extends State<Login> {
           "contactNumber": "",
           "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
           "email": user.email,
-          "status": "active",
+          "status": true,
           "userType": "default",
         });
       }
