@@ -50,11 +50,17 @@ class _LoginState extends State<Login> {
     await dataBase
         .reference()
         .child("userInfo")
+        .child("default")
         .child(user.uid)
         .once()
         .then((DataSnapshot snapshot) {
       if (snapshot.value == null) {
-        dataBase.reference().child("userInfo").child(user.uid).set({
+        dataBase
+            .reference()
+            .child("userInfo")
+            .child("default")
+            .child(user.uid)
+            .set({
           "contactNumber": "",
           "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
           "email": user.email,
@@ -118,9 +124,6 @@ class _LoginState extends State<Login> {
                 height: 30.0,
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
-              RaisedButton(onPressed: () {
-                Navigator.pushNamed(context, '/home', arguments: null);
-              })
             ],
           ),
         ),
