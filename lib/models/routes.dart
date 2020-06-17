@@ -15,6 +15,8 @@ class BusRoute {
   List<Stop> routeStops;
   TimeOfDay startTime;
   String ownerId;
+  String routeId;
+  String ownerName;
 
   BusRoute(this.name, this.recMode, this.recList);
 
@@ -28,6 +30,8 @@ class BusRoute {
         'startTime': startTime.hour.toString().padLeft(2, '0') +
             startTime.minute.toString().padLeft(2, '0'),
         'ownerId': ownerId,
+        'routeId': routeId,
+        'ownerName': ownerName,
       };
 
   BusRoute.fromResponse(response) {
@@ -66,5 +70,7 @@ class BusRoute {
     }
     this.start = routeStops.first;
     this.end = routeStops.last;
+
+    this.routeId = response["_id"];
   }
 }

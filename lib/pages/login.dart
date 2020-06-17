@@ -40,6 +40,7 @@ class _LoginState extends State<Login> {
     print("signed in " + user.displayName);
     await GlobalFunctions.getStops();
     await _initializeData(user); //*
+    await GlobalFunctions.getInstitutes();
     return user;
   }
 

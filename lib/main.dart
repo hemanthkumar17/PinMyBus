@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:pinmybus/pages/buslist_route.dart';
 import 'package:pinmybus/pages/buslist_stop.dart';
 import 'package:pinmybus/pages/home.dart';
-import 'package:pinmybus/pages/instistuitional.dart';
+import 'package:pinmybus/pages/institutional.dart';
 import 'package:pinmybus/pages/login.dart';
 import 'package:pinmybus/pages/map.dart';
 import 'package:pinmybus/pages/routeinfo.dart';
@@ -35,7 +35,7 @@ class PinMyBusApp extends StatelessWidget {
             BuslistRoute(args: ModalRoute.of(context).settings.arguments),
         '/routeinfo': (context) => Routeinfo(route: ModalRoute.of(context).settings.arguments),
         '/suggest': (context) => MapPickerPage(),
-        '/insti': (context) => Instituitional(),
+        '/insti': (context) => InstitutePage(),
         '/remind': (context) => Remind(),
       },
     );

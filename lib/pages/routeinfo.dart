@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -15,10 +16,44 @@ class Routeinfo extends StatefulWidget {
 }
 
 class _RouteinfoState extends State<Routeinfo> {
+  Set<Marker> markerStops = {};
   final Location location = Location();
   LocationData _location;
   StreamSubscription<LocationData> _locationSubscription;
   String _error;
+
+  Timer timer;
+
+  void startTime() {
+    FirebaseDatabase.instance
+        .reference()
+        .child("routes")
+        .child(widget.route.routeId)
+        .child("location")
+        .onValue
+        .listen((event) {
+      var data = event.snapshot.value;
+      if (data != null)
+        markerStops.add(
+          Marker(
+            markerId: MarkerId('driver'),
+            position: LatLng(data[0], data[1]),
+            infoWindow: InfoWindow(title: 'Bus'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueBlue,
+            ),
+          ),
+        );
+    });
+    print(_location.toString());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _listenLocation();
+    startTime();
+  }
 
   Future<void> _listenLocation() async {
     _locationSubscription =
@@ -53,12 +88,6 @@ class _RouteinfoState extends State<Routeinfo> {
   }
 
   Completer<GoogleMapController> _controller = Completer();
-
-  @override
-  void initState() {
-    super.initState();
-    _listenLocation();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,7 +221,6 @@ class _RouteinfoState extends State<Routeinfo> {
                                   stopname,
                                   style: TextStyle(),
                                 ))))),
-
                     Align(
                         alignment: Alignment(.75, .40),
                         child: Text(
@@ -210,23 +238,23 @@ class _RouteinfoState extends State<Routeinfo> {
                           style: TextStyle(fontSize: 15),
                         )),
                     Align(
-                      alignment: Alignment(-.80, .90),
-                      child:Container(
-                    child: RaisedButton(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Container(
-                      height: 30,
-                      width: 80,
-                      child: Center(
-                          child: Text(
-                        "Set a Reminder",
-                        style: TextStyle(fontSize: 11, color: Colors.black),
-                      ))),
-                  onPressed: () {
-                  },
-                ))),
+                        alignment: Alignment(-.80, .90),
+                        child: Container(
+                            child: RaisedButton(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Container(
+                              height: 30,
+                              width: 80,
+                              child: Center(
+                                  child: Text(
+                                "Set a Reminder",
+                                style: TextStyle(
+                                    fontSize: 11, color: Colors.black),
+                              ))),
+                          onPressed: () {},
+                        ))),
                   ],
                 ),
               )),
@@ -234,7 +262,6 @@ class _RouteinfoState extends State<Routeinfo> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
-    Set<Marker> markerStops = {};
     for (var stop in widget.route.routeStops) {
       markerStops.add(
         Marker(

@@ -1,12 +1,16 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pinmybus/models/institute.dart';
 import 'stops.dart';
 
 const URL = "https://us-central1-pinmybus-staging.cloudfunctions.net";
 List<Stop> stopsComplete;
 
 class GlobalFunctions {
+
+  static List<Institute> institutes;
+
   static void printError(String error, GlobalKey<ScaffoldState> key) {
     key.currentState.showSnackBar(SnackBar(content: Text(error)));
   }
@@ -28,5 +32,16 @@ class GlobalFunctions {
     }
     print(stopsComplete);
     // print(stops);
+  }
+
+  static Future<void> getInstitutes() async {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(functionName: "listInstitutes");
+    HttpsCallableResult response = await callable.call();
+    print(response.data);
+    
+    institutes = [];
+    for (var json in response.data) {
+      institutes.add(Institute.fromJson(json));
+    }
   }
 }

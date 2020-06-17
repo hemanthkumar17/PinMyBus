@@ -33,7 +33,6 @@ class _BuslistRouteState extends State<BuslistRoute> {
 
   void createWid() {
   List<BusRoute> routeList = widget.args["routeList"];
-  List<Data> userData = widget.args["userData"];
     routeWid = [];
     for (var route in routeList) {
       routeWid.add(Container(
@@ -52,7 +51,7 @@ class _BuslistRouteState extends State<BuslistRoute> {
                 Align(
                     alignment: Alignment(-.75, -.60),
                     child: Text(
-                      busname,
+                      route.ownerName,
                       style: TextStyle(fontSize: 25),
                     )),
                 Align(
