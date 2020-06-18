@@ -17,6 +17,7 @@ class Routeinfo extends StatefulWidget {
 
 class _RouteinfoState extends State<Routeinfo> {
   Set<Marker> markerStops = {};
+  Marker current;
   final Location location = Location();
   LocationData _location;
   StreamSubscription<LocationData> _locationSubscription;
@@ -33,17 +34,20 @@ class _RouteinfoState extends State<Routeinfo> {
         .onValue
         .listen((event) {
       var data = event.snapshot.value;
-      if (data != null)
-        markerStops.add(
-          Marker(
-            markerId: MarkerId('driver'),
-            position: LatLng(data[0], data[1]),
-            infoWindow: InfoWindow(title: 'Bus'),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueBlue,
-            ),
+      print(LatLng(data["latitude"], data["longitude"]));
+      if (data != null) {
+        current = Marker(
+          markerId: MarkerId('driver'),
+          position: LatLng(data["latitude"], data["longitude"]),
+          infoWindow: InfoWindow(title: 'Bus'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueRed,
           ),
         );
+        print("notNull");
+      }
+      else
+        current = null;
     });
     print(_location.toString());
   }
@@ -262,6 +266,7 @@ class _RouteinfoState extends State<Routeinfo> {
   }
 
   Widget _buildGoogleMap(BuildContext context) {
+    markerStops = {};
     for (var stop in widget.route.routeStops) {
       markerStops.add(
         Marker(
@@ -284,6 +289,10 @@ class _RouteinfoState extends State<Routeinfo> {
         ),
       ),
     );
+    if(current != null)
+      markerStops.add(current);
+    print("Hello");
+    print(markerStops.map((e) => e.position).toList());
 
     return Container(
       height: MediaQuery.of(context).size.height,
