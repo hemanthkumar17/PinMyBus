@@ -50,8 +50,7 @@ class _BuslistRouteState extends State<BuslistRoute> {
                 ),
                 Align(
                     alignment: Alignment(-.75, -.60),
-                    child: Text(
-                      route.ownerName,
+                    child: Text("Owner",
                       style: TextStyle(fontSize: 25),
                     )),
                 Align(
