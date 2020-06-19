@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/institute.dart';
 import 'package:pinmybus/models/routes.dart';
-import 'package:pinmybus/models/userData.dart';
 import 'package:pinmybus/widgets/search.dart';
 
 class InstitutePage extends StatefulWidget {
@@ -17,10 +16,30 @@ class InstitutePage extends StatefulWidget {
 class _InstitutePageState extends State<InstitutePage> {
   String text = "Institute name";
   Widget cancelInstitute = Container();
-  TextEditingController _codeController =
-      TextEditingController(text: "NITC-AB33");
-  TextEditingController _licensenoController =
-      TextEditingController(text: "testlice");
+  TextEditingController _codeController = TextEditingController();
+  TextEditingController _licensenoController = TextEditingController();
+
+  Future<List<BusRoute>> _getInstituteRoutes() async {
+    Institute selected = GlobalFunctions.institutes
+        .firstWhere((element) => element.name == text);
+    Map<String, dynamic> dataJson = {
+      "code": _licensenoController.text,
+      "institute": {
+        "instituteId": selected.id,
+        "searchKey": _codeController.text
+      }
+    };
+    final HttpsCallable callable =
+        CloudFunctions.instance.getHttpsCallable(functionName: "byCodeRoutes");
+    HttpsCallableResult response = await callable.call(dataJson);
+
+    List<BusRoute> routeList = [];
+    for (var route in response.data) {
+      routeList.add(BusRoute.fromResponse(route));
+      routeList.last.ownerName = route['busName'];
+    }
+    return routeList;
+  }
 
   Future<void> searchStop(BuildContext context) async {
     var res = await showSearch(context: context, delegate: Institutesearch());
@@ -121,15 +140,13 @@ class _InstitutePageState extends State<InstitutePage> {
                         // fillColor: Colors.green
                       ),
                       controller: _codeController,
-                      // validator: (val) {
-                      //   if (val.length == 0) {
-                      //     return "Password cannot be empty";
-                      //   } else if (val != _password.text) {
-                      //     return "Passwords do not match";
-                      //   } else {
-                      //     return null;
-                      //   }
-                      // },
+                      validator: (val) {
+                        if (val.length == 0) {
+                          return "Code cannot be empty";
+                        } else {
+                          return null;
+                        }
+                      },
                       keyboardType: TextInputType.emailAddress,
                       style: new TextStyle(),
                     ),
@@ -151,15 +168,13 @@ class _InstitutePageState extends State<InstitutePage> {
                         // fillColor: Colors.green
                       ),
                       controller: _licensenoController,
-                      // validator: (val) {
-                      //   if (val.length == 0) {
-                      //     return "Password cannot be empty";
-                      //   } else if (val != _password.text) {
-                      //     return "Passwords do not match";
-                      //   } else {
-                      //     return null;
-                      //   }
-                      // },
+                      validator: (val) {
+                        if (val.length == 0) {
+                          return "License Number cannot be empty";
+                        } else {
+                          return null;
+                        }
+                      },
                       keyboardType: TextInputType.emailAddress,
                       style: new TextStyle(),
                     ),
@@ -169,31 +184,7 @@ class _InstitutePageState extends State<InstitutePage> {
                   ),
                   RaisedButton(
                     onPressed: () async {
-                      Institute selected = GlobalFunctions.institutes
-                          .firstWhere((element) => element.name == text);
-                      Map<String, dynamic> dataJson = {
-                        "code": _licensenoController.text,
-                        "institute": {
-                          "instituteId": selected.id,
-                          "searchKey": _codeController.text
-                        }
-                      };
-                      print(dataJson);
-                      final HttpsCallable callable = CloudFunctions.instance
-                          .getHttpsCallable(functionName: "byCodeRoutes");
-                      HttpsCallableResult response =
-                          await callable.call(dataJson);
-
-                      print(response.data);
-                      List<BusRoute> routeList = [];
-                      for (var route in response.data) {
-                        routeList.add(BusRoute.fromResponse(route));
-                        print(route);
-                        print(route['busName']);
-                        routeList.last.ownerName = route['busName'];
-                        print(routeList.last.toJson());
-                      }
-
+                      List<BusRoute> routeList = await _getInstituteRoutes();
                       Map args = {"routeList": routeList};
                       Navigator.pushReplacementNamed(context, '/buslist_route',
                           arguments: args);

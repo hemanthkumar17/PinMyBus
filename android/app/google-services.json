@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "28735654339-mre3o0ovtr6juq88kthbhn2r7hame7kv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pinmybus",
+            "certificate_hash": "0bcbec87a11b55355ac33f7e582c7f8ae397a242"
+          }
+        },
+        {
+          "client_id": "28735654339-7ta7fceai5vvr10tf51jpotioceadueo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pinmybus",
+            "certificate_hash": "a75e7fdab4c2cdbaa7bcdc71fe4c0300975a811f"
+          }
+        },
+        {
           "client_id": "28735654339-9qnmtm1a2gpk8rmqmps7oq58fab3scer.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
