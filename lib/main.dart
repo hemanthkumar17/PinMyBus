@@ -24,7 +24,12 @@ class PinMyBusApp extends StatelessWidget {
     return MaterialApp(
       title: "Pin My Bus",
       home: Login(),
-      theme: ThemeData(primaryColor: Colors.black, accentColor: Colors.orange),
+      theme: ThemeData(
+          primarySwatch: Colors.orange,
+          primaryColor: Colors.orange,
+          accentColor: Colors.black,
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
+          ),
       routes: {
         '/login': (context) => Login(),
         '/home': (context) => Home(ModalRoute.of(context).settings.arguments),
@@ -33,7 +38,8 @@ class PinMyBusApp extends StatelessWidget {
             BuslistStop(args: ModalRoute.of(context).settings.arguments),
         '/buslist_route': (context) =>
             BuslistRoute(args: ModalRoute.of(context).settings.arguments),
-        '/routeinfo': (context) => Routeinfo(route: ModalRoute.of(context).settings.arguments),
+        '/routeinfo': (context) =>
+            Routeinfo(route: ModalRoute.of(context).settings.arguments),
         '/suggest': (context) => MapPickerPage(),
         '/insti': (context) => InstitutePage(),
         '/remind': (context) => Remind(),

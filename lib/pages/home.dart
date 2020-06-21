@@ -64,23 +64,6 @@ class _HomeState extends State<Home> {
 
   DateTime selectedDate = DateTime.now();
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        selectedDate = picked;
-      });
-  }
-
-  void _showMultiSelect(BuildContext context) async {
-    await _selectDate(context);
-    // widget.dropList([selectedDate.day.toString()]);
-  }
-
   void getvaluefromkey(Set selection) {
     if (selection != null) {
       droplist = [];
@@ -95,13 +78,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.user.email);
     String name = widget.user.displayName;
     String phno = '+911234567890';
     return Container(
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(255, 171, 0, .9),
           title: Text('Home'),
         ),
         drawer: Drawer(
@@ -166,13 +147,9 @@ class _HomeState extends State<Home> {
                           'assets/images/logo.png',
                         ))),
                 Container(
-                  width: double.infinity,
+                  width: MediaQuery.of(context).size.width,
                   child: Card(
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(color: Colors.white70, width: 1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    color: Color.fromRGBO(255, 171, 0, .9),
+                    color: Theme.of(context).primaryColor,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
@@ -191,26 +168,22 @@ class _HomeState extends State<Home> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                    InkWell(
-                                        child: Container(
-                                            height: 50,
-                                            child: Row(children: <Widget>[
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 10)),
-                                              Icon(Icons.search),
-                                              Padding(
-                                                  padding: EdgeInsets.only(
-                                                      left: 20)),
-                                              Text(start,
-                                                  style: TextStyle(
-                                                    fontSize: 20.0,
-                                                    color: Colors.black,
-                                                  )),
-                                            ])),
-                                        onTap: () {
-                                          searchStop(context, true);
-                                        }),
+                                    Container(
+                                        height: 50,
+                                        child: Row(children: <Widget>[
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 10)),
+                                          Icon(Icons.search),
+                                          Padding(
+                                              padding:
+                                                  EdgeInsets.only(left: 20)),
+                                          Text(start,
+                                              style: TextStyle(
+                                                fontSize: 20.0,
+                                                color: Colors.black,
+                                              )),
+                                        ])),
                                     startCancel
                                   ]),
                             ),
@@ -220,11 +193,8 @@ class _HomeState extends State<Home> {
                         InkWell(
                             child: Card(
                               shape: RoundedRectangleBorder(
-                                side:
-                                    BorderSide(color: Colors.white70, width: 1),
                                 borderRadius: BorderRadius.circular(100),
                               ),
-                              color: Colors.white,
                               child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -235,25 +205,18 @@ class _HomeState extends State<Home> {
                                             BorderRadius.circular(100),
                                       ),
                                       height: 50,
-                                      child: InkWell(
-                                        onTap: () {
-                                          searchStop(context, false);
-                                        },
-                                        child: Row(children: <Widget>[
-                                          Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 10)),
-                                          Icon(Icons.search),
-                                          Padding(
-                                              padding:
-                                                  EdgeInsets.only(left: 20)),
-                                          Text(dest,
-                                              style: TextStyle(
-                                                fontSize: 20.0,
-                                                color: Colors.black,
-                                              )),
-                                        ]),
-                                      ),
+                                      child: Row(children: <Widget>[
+                                        Padding(
+                                            padding: EdgeInsets.only(left: 10)),
+                                        Icon(Icons.search),
+                                        Padding(
+                                            padding: EdgeInsets.only(left: 20)),
+                                        Text(dest,
+                                            style: TextStyle(
+                                              fontSize: 20.0,
+                                              color: Colors.black,
+                                            )),
+                                      ]),
                                     ),
                                     destCancel
                                   ]),
@@ -264,21 +227,37 @@ class _HomeState extends State<Home> {
                         SizedBox(
                           height: 10,
                         ),
-                        RaisedButton(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Container(
-                              height: 50,
-                              width: 300,
-                              child: Center(
-                                  child: Text(
-                                "Select Date",
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.black),
-                              ))),
-                          onPressed: () => _showMultiSelect(context),
-                        ),
+                        Theme(
+                            data: Theme.of(context)
+                                .copyWith(primaryColor: Colors.orange),
+                            child: Builder(
+                                builder: (context) => RaisedButton(
+                                      color: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20)),
+                                      child: Container(
+                                          height: 50,
+                                          width: 300,
+                                          child: Center(
+                                              child: Text(
+                                            "Select Date",
+                                            style: TextStyle(fontSize: 10),
+                                          ))),
+                                      onPressed: () async {
+                                        final DateTime picked =
+                                            await showDatePicker(
+                                                context: context,
+                                                initialDate: selectedDate,
+                                                firstDate: DateTime(2015, 8),
+                                                lastDate: DateTime(2101));
+                                        if (picked != null &&
+                                            picked != selectedDate)
+                                          setState(() {
+                                            selectedDate = picked;
+                                          });
+                                      },
+                                    ))),
                         SizedBox(
                           height: 10,
                         ),
@@ -323,7 +302,10 @@ class _HomeState extends State<Home> {
                               }
 
                               Navigator.pushNamed(context, '/buslist_route',
-                                  arguments: {"routeList": routeList, "userData": userData});
+                                  arguments: {
+                                    "routeList": routeList,
+                                    "userData": userData
+                                  });
                             }),
                         SizedBox(
                           height: 10,
