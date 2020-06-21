@@ -8,6 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/stops.dart';
+import 'package:pinmybus/utils/reminder.dart' ;
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -39,8 +40,8 @@ class _LoginState extends State<Login> {
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
     await GlobalFunctions.getStops();
+    await Scheduler.initNotifications() ;
     await _initializeData(user); //*
-    await GlobalFunctions.getInstitutes();
     return user;
   }
 

@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:pinmybus/models/routes.dart';
+import 'package:pinmybus/models/stops.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:pinmybus/utils/reminder.dart';
+
+DateTime date ;
 
 class Routeinfo extends StatefulWidget {
   final BusRoute route;
@@ -45,8 +49,7 @@ class _RouteinfoState extends State<Routeinfo> {
           ),
         );
         print("notNull");
-      }
-      else
+      } else
         current = null;
     });
     print(_location.toString());
@@ -177,8 +180,8 @@ class _RouteinfoState extends State<Routeinfo> {
       boxList.add(
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: _boxes(stop.location.latitude, stop.location.longitude,
-              stop.stopName, stop.offset),
+          child: _boxes(stop.location.latitude, stop.location.longitude, stop,
+              stop.offset),
         ),
       );
     }
@@ -195,74 +198,107 @@ class _RouteinfoState extends State<Routeinfo> {
     );
   }
 
-  Widget _boxes(double lat, double long, String stopname, TimeOfDay offset) {
+  Widget _boxes(double lat, double long, Stop stop, TimeOfDay offset) {
     return GestureDetector(
-        onTap: () {
-          _gotoLocation(lat, long);
-        },
-        child: Container(
-          child: Card(
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.white70, width: 1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              color: Color.fromRGBO(255, 171, 0, .9),
-              child: Container(
-                width: 300,
-                child: Stack(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Align(
-                        alignment: Alignment(0, -.40),
-                        child: Card(
-                            child: Container(
-                                height: 50,
-                                width: 350,
-                                child: Center(
-                                    child: Text(
-                                  stopname,
-                                  style: TextStyle(),
-                                ))))),
-                    Align(
-                        alignment: Alignment(.75, .40),
-                        child: Text(
-                          'Time of arrival:',
-                          style: TextStyle(
-                            fontSize: 10,
-                          ),
-                        )),
-                    Align(
-                        alignment: Alignment(.75, .80),
-                        child: Text(
-                          offset.hour.toString().padLeft(2, "0") +
-                              ':' +
-                              offset.minute.toString().padLeft(2, "0"),
-                          style: TextStyle(fontSize: 15),
-                        )),
-                    Align(
-                        alignment: Alignment(-.80, .90),
-                        child: Container(
-                            child: RaisedButton(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Container(
-                              height: 30,
-                              width: 80,
-                              child: Center(
-                                  child: Text(
-                                "Set a Reminder",
-                                style: TextStyle(
-                                    fontSize: 11, color: Colors.black),
-                              ))),
-                          onPressed: () {},
-                        ))),
-                  ],
+      onTap: () {
+        _gotoLocation(lat, long);
+      },
+      child: Container(
+        child: Card(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: Colors.white70, width: 1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          color: Color.fromRGBO(255, 171, 0, .9),
+          child: Container(
+            width: 300,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                  height: 10,
                 ),
-              )),
-        ));
+                Align(
+                  alignment: Alignment(0, -.40),
+                  child: Card(
+                    child: Container(
+                      height: 50,
+                      width: 350,
+                      child: Center(
+                        child: Text(
+                          stop.stopName,
+                          style: TextStyle(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(.75, .40),
+                  child: Text(
+                    'Time of arrival:',
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(.75, .80),
+                  child: Text(
+                    offset.hour.toString().padLeft(2, "0") +
+                        ':' +
+                        offset.minute.toString().padLeft(2, "0"),
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment(-.80, .90),
+                  child: Container(
+                    child: RaisedButton(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Container(
+                        height: 30,
+                        width: 80,
+                        child: Center(
+                          child: Text(
+                            "Set a Reminder",
+                            style: TextStyle(fontSize: 11, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await Scheduler.addNotification(
+                          DateTime.now(),
+                          widget.route.name,
+                          stop,
+                        );
+                        showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                                content: Container(
+                                  child: Text("Reminder Set"),
+                                ),
+                                actions: [
+                                  FlatButton(
+                                      child: Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      }),
+                                ]);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildGoogleMap(BuildContext context) {
@@ -289,8 +325,7 @@ class _RouteinfoState extends State<Routeinfo> {
         ),
       ),
     );
-    if(current != null)
-      markerStops.add(current);
+    if (current != null) markerStops.add(current);
     print("Hello");
     print(markerStops.map((e) => e.position).toList());
 

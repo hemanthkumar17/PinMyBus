@@ -114,33 +114,9 @@ Future<bool> init() async {
       selectNotificationSubject.add(payload);
     },
   );
+  _requestIOSPermissions() ;
   print("InitDone");
   return true;
-}
-
-class Remind extends StatefulWidget {
-  @override
-  _RemindState createState() => _RemindState();
-}
-
-class _RemindState extends State<Remind> {
-  @override
-  Widget build(BuildContext context) {
-    Future<bool> x = init();
-    return MaterialApp(
-      home: FutureBuilder(
-        future: x,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done)
-            return MaterialApp(
-              home: HomePage(),
-            );
-          else
-            return CircularProgressIndicator();
-        },
-      ),
-    );
-  }
 }
 
 class PaddedRaisedButton extends StatelessWidget {
@@ -161,165 +137,19 @@ class PaddedRaisedButton extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final MethodChannel platform =
-      MethodChannel('crossingthestreams.io/resourceResolver');
-  @override
-  void initState() {
-    super.initState();
-    _requestIOSPermissions();
-  }
-
-  void _requestIOSPermissions() {
-    flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-  }
-
-  @override
-  void dispose() {
-    didReceiveLocalNotificationSubject.close();
-    selectNotificationSubject.close();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Plugin example app'),
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Center(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                    child: Text(
-                        'Tap on a notification when it appears to trigger navigation'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                    child: Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Did notification launch app? ',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(
-                            text:
-                                '${notificationAppLaunchDetails?.didNotificationLaunchApp ?? false}',
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (notificationAppLaunchDetails?.didNotificationLaunchApp ??
-                      false)
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 8.0),
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Launch notification payload: ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: notificationAppLaunchDetails.payload,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  PaddedRaisedButton(
-                    buttonText: "Select Date",
-                    onPressed: () => DatePicker.showDateTimePicker(
-                      context,
-                      onChanged: (date) {
-                        scheduleDate = date;
-                      },
-                      onConfirm: (date) {
-                        setState(() {
-                          scheduleDate = date;
-                        });
-                      },
-                      currentTime: scheduleDate,
-                    ),
-                  ),
-                  Text(scheduleDate.toString()),
-                  PaddedRaisedButton(
-                    buttonText: 'Add RouteSchedule',
-                    onPressed: () async {
-                      await Scheduler._addRouteNotification(
-                        mockRoute,
-                        date: DateTime.now(),
-                      );
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Add Notification',
-                    onPressed: () async {
-                      await Scheduler._addNotification(
-                        scheduleDate,
-                        'busName',
-                        Stop("stopName", "1", LatLng(0, 0)),
-                      );
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Cancel notification',
-                    onPressed: () async {
-                      await Scheduler._cancelNotification(0);
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText:
-                        'Repeat notification every day at $scheduleDate',
-                    onPressed: () async {
-                      await Scheduler._addDailyAtTime();
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Check pending notifications',
-                    onPressed: () async {
-                      await Scheduler._checkPendingNotificationRequests(
-                          context);
-                    },
-                  ),
-                  PaddedRaisedButton(
-                    buttonText: 'Cancel all notifications',
-                    onPressed: () async {
-                      await Scheduler._cancelAllNotifications();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+void _requestIOSPermissions() {
+  flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>()
+      ?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
 }
 
 class Scheduler {
-  static void initNotifications() async {
+  static Future<void> initNotifications() async {
     await init();
   }
 
@@ -371,7 +201,7 @@ class Scheduler {
         ),
       );
       if (check(scheduleDate))
-        await _addNotification(
+        await addNotification(
           scheduleDate,
           route.name,
           stop,
@@ -391,6 +221,7 @@ class Scheduler {
         stop = route.routeStops[j];
         await _addWeeklyAtDayAndTime(
             stop,
+            route.name,
             Time(
               startTime.hour + stop.offset.hour,
               startTime.minute + stop.offset.minute,
@@ -399,13 +230,13 @@ class Scheduler {
             day);
       }
     }
-    await _showScheduleDone(route.name) ;
+    await _showScheduleDone(route.name);
   }
 
   static Future<void> _addMonthlyRouteNotification(BusRoute route) async {}
 
-  static Future<void> _addNotification(
-      DateTime date, String no, Stop stop) async {
+  static Future<void> addNotification(
+      DateTime date, String name, Stop stop) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'PinMyBus',
       'PinMyBusChannel',
@@ -422,10 +253,11 @@ class Scheduler {
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     var id = pending.length;
     id += 1;
+    print("Reminder $id Set");
     await flutterLocalNotificationsPlugin.schedule(
       id,
       "Reminder ${stop.stopName}",
-      "Bus $no Will Reach Stop ${stop.stopName} In 5 mins",
+      "Route $name : Bus Will Reach Stop ${stop.stopName} In 5 mins",
       scheduleDate,
       platformChannelSpecifics,
       androidAllowWhileIdle: true,
@@ -457,7 +289,7 @@ class Scheduler {
     print("Notification $id Cancelled");
   }
 
-  static Future<void> _checkPendingNotificationRequests(context) async {
+  static Future<void> checkPendingNotificationRequests(context) async {
     var pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     var list = <Widget>[];
@@ -520,7 +352,7 @@ class Scheduler {
   }
 
   static Future<void> _addWeeklyAtDayAndTime(
-      Stop stop, Time time, Day day) async {
+      Stop stop, String name, Time time, Day day) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'PinMyBus',
       'PinMyBusChannel',
@@ -538,7 +370,7 @@ class Scheduler {
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
       id,
       'Reminder ${stop.stopName}',
-      "Bus busName Will Reach Stop ${stop.stopName} In 5 mins",
+      "Route $name : Bus Will Reach Stop ${stop.stopName} In 5 mins",
       day,
       time,
       platformChannelSpecifics,
