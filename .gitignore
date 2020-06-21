@@ -44,3 +44,5 @@ app.*.map.json
 android/local.properties
 android/key.properties
 android/local.properties
+lib/repositories/location.dart
+lib/blocs/bloc.dart

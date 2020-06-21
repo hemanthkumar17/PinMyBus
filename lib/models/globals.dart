@@ -8,9 +8,9 @@ import 'package:pinmybus/utils/reminder.dart' ;
 const URL = "https://us-central1-pinmybus-staging.cloudfunctions.net";
 List<Stop> stopsComplete;
 
-class GlobalFunctions {
+abstract class GlobalFunctions {
   static List<Institute> institutes;
-
+  static LatLng _location;
   static void printError(String error, GlobalKey<ScaffoldState> key) {
     key.currentState.showSnackBar(SnackBar(content: Text(error)));
   }
@@ -45,4 +45,6 @@ class GlobalFunctions {
       institutes.add(Institute.fromJson(json));
     }
   }
+
+  static LatLng getLocation() => _location;
 }
