@@ -245,12 +245,11 @@ class Scheduler {
     return false;
   }
 
-  static bool checkAvail(int id,List<PendingNotificationRequest> pending){
-    for(int i=pending.length-1;i>=0;i-=1){
-      if(pending[i].id==id)
-        return false ;
+  static bool checkAvail(int id, List<PendingNotificationRequest> pending) {
+    for (int i = pending.length - 1; i >= 0; i -= 1) {
+      if (pending[i].id == id) return false;
     }
-    return true ;
+    return true;
   }
 
   static Future<void> _addRouteNotification(BusRoute route,
@@ -339,10 +338,9 @@ class Scheduler {
     var scheduleDate = date;
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length ;
+    var id = pending.length;
     id += 1;
-    if(!checkAvail(id, pending))
-      while(!checkAvail(id,pending)) id += 1;
+    if (!checkAvail(id, pending)) while (!checkAvail(id, pending)) id += 1;
     print("Reminder $id Set On $scheduleDate");
     await flutterLocalNotificationsPlugin.schedule(
       id,
@@ -405,10 +403,9 @@ class Scheduler {
         Time(scheduleDate.hour, scheduleDate.minute, scheduleDate.second);
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length ;
+    var id = pending.length;
     id += 1;
-    if(!checkAvail(id, pending))
-      while(!checkAvail(id,pending)) id += 1;
+    if (!checkAvail(id, pending)) while (!checkAvail(id, pending)) id += 1;
     await flutterLocalNotificationsPlugin.showDailyAtTime(
       id,
       'show daily title',
@@ -432,10 +429,9 @@ class Scheduler {
     );
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length ;
+    var id = pending.length;
     id += 1;
-    if(!checkAvail(id, pending))
-      while(!checkAvail(id,pending)) id += 1;
+    if (!checkAvail(id, pending)) while (!checkAvail(id, pending)) id += 1;
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
       id,
       'Reminder ${stop.stopName}',
