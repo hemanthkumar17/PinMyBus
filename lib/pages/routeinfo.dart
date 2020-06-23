@@ -9,7 +9,7 @@ import 'package:pinmybus/models/stops.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:pinmybus/utils/reminder.dart';
 
-DateTime date ;
+DateTime date;
 
 class Routeinfo extends StatefulWidget {
   final BusRoute route;
@@ -268,8 +268,16 @@ class _RouteinfoState extends State<Routeinfo> {
                         ),
                       ),
                       onPressed: () async {
+                        var dateNow = DateTime.now();
+                        DateTime date = DateTime(
+                          dateNow.year,
+                          dateNow.month ,
+                          dateNow.day,
+                          offset.hour,
+                          offset.minute,
+                        );
                         await Scheduler.addNotification(
-                          DateTime.now(),
+                          date,
                           widget.route.name,
                           stop,
                         );

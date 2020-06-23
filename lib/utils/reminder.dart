@@ -343,7 +343,7 @@ class Scheduler {
     id += 1;
     if(!checkAvail(id, pending))
       while(!checkAvail(id,pending)) id += 1;
-    print("Reminder $id Set");
+    print("Reminder $id Set On $scheduleDate");
     await flutterLocalNotificationsPlugin.schedule(
       id,
       "Reminder ${stop.stopName}",
