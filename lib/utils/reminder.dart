@@ -1,17 +1,96 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/models/stops.dart';
 import 'package:rxdart/subjects.dart';
 
 import 'package:pinmybus/models/routes.dart';
+
+class Reminder extends StatefulWidget {
+  @override
+  _ReminderState createState() => _ReminderState();
+}
+
+class _ReminderState extends State<Reminder> {
+  Future<List<Widget>> getListObject() async {
+    List<Widget> data = [];
+    List<PendingNotificationRequest> x =
+        await Scheduler.checkPendingNotificationRequests(context);
+    String route = "";
+    String stop = "";
+    x.forEach((element) {
+      route = element.body.split(' : ')[0].split("Route ")[1];
+      stop = element.body.split('Stop ')[1].split(" In")[0];
+      data.add(
+        ListTile(
+          title: Text("Route : $route Stop : $stop"),
+          trailing: FlatButton(
+            child: Icon(Icons.cancel),
+            onPressed: () => showDialog<void>(
+              context: context,
+              builder: (BuildContext context) {
+                Scheduler._cancelNotification(element.id).whenComplete(() {
+                  setState(() {});
+                });
+                return AlertDialog(
+                  content: Container(
+                    child: Text("Notification Cancelled"),
+                  ),
+                  actions: [
+                    FlatButton(
+                      child: Text("OK"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(1000),
+            ),
+          ),
+        ),
+      );
+    });
+    return data;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Reminders"),
+        ),
+        body: Container(
+          child: FutureBuilder(
+            future: getListObject(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done)
+                return ListView(
+                  children: snapshot.data,
+                );
+              else
+                return CircularProgressIndicator();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -87,7 +166,8 @@ Future<bool> init() async {
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
 
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  var initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   var initializationSettingsIOS = IOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -114,7 +194,7 @@ Future<bool> init() async {
       selectNotificationSubject.add(payload);
     },
   );
-  _requestIOSPermissions() ;
+  _requestIOSPermissions();
   print("InitDone");
   return true;
 }
@@ -163,6 +243,14 @@ class Scheduler {
     var now = DateTime.now().subtract(Duration(minutes: 5));
     if (toDouble(date) > toDouble(now)) return true;
     return false;
+  }
+
+  static bool checkAvail(int id,List<PendingNotificationRequest> pending){
+    for(int i=pending.length-1;i>=0;i-=1){
+      if(pending[i].id==id)
+        return false ;
+    }
+    return true ;
   }
 
   static Future<void> _addRouteNotification(BusRoute route,
@@ -251,8 +339,10 @@ class Scheduler {
     var scheduleDate = date;
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length;
+    var id = pending.length ;
     id += 1;
+    if(!checkAvail(id, pending))
+      while(!checkAvail(id,pending)) id += 1;
     print("Reminder $id Set");
     await flutterLocalNotificationsPlugin.schedule(
       id,
@@ -289,36 +379,11 @@ class Scheduler {
     print("Notification $id Cancelled");
   }
 
-  static Future<void> checkPendingNotificationRequests(context) async {
-    var pendingNotificationRequests =
+  static Future<List<PendingNotificationRequest>>
+      checkPendingNotificationRequests(context) async {
+    List<PendingNotificationRequest> pendingNotificationRequests =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var list = <Widget>[];
-    pendingNotificationRequests.forEach((element) {
-      var id = element.id;
-      var title = element.title;
-      list.add(Text("$id $title"));
-    });
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Container(
-              height: 100,
-              width: 100,
-              child: ListView(
-                children: list,
-              )),
-          actions: [
-            FlatButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    return pendingNotificationRequests;
   }
 
   static Future<void> _cancelAllNotifications() async {
@@ -340,8 +405,10 @@ class Scheduler {
         Time(scheduleDate.hour, scheduleDate.minute, scheduleDate.second);
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length;
+    var id = pending.length ;
     id += 1;
+    if(!checkAvail(id, pending))
+      while(!checkAvail(id,pending)) id += 1;
     await flutterLocalNotificationsPlugin.showDailyAtTime(
       id,
       'show daily title',
@@ -365,8 +432,10 @@ class Scheduler {
     );
     var pending =
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
-    var id = pending.length;
+    var id = pending.length ;
     id += 1;
+    if(!checkAvail(id, pending))
+      while(!checkAvail(id,pending)) id += 1;
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
       id,
       'Reminder ${stop.stopName}',
