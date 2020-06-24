@@ -8,6 +8,7 @@ import 'package:pinmybus/pages/login.dart';
 import 'package:pinmybus/pages/homepage.dart';
 import 'package:pinmybus/pages/routeinfo.dart';
 import 'package:pinmybus/pages/suggeststop.dart';
+import 'package:pinmybus/utils/reminder.dart' ;
 
 void main() async {
   runApp(PinMyBusApp());
@@ -41,6 +42,7 @@ class PinMyBusApp extends StatelessWidget {
             Routeinfo(route: ModalRoute.of(context).settings.arguments),
         '/suggest': (context) => MapPickerPage(),
         '/insti': (context) => InstitutePage(),
+        '/reminders': (context) => Reminder(),
       },
     );
   }

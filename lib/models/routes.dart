@@ -58,6 +58,9 @@ class BusRoute {
     this.ownerId = response["ownerId"];
 
     this.routeStops = [];
+    
+    print(response['routeStops']) ;
+    print(stopsComplete) ;
 
     for (var stop in response["routeStops"]) {
       this.routeStops.add(stopsComplete
