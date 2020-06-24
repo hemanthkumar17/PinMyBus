@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinmybus/pages/buslist_route.dart';
 import 'package:pinmybus/pages/buslist_stop.dart';
-import 'package:pinmybus/pages/home.dart';
+import 'package:pinmybus/pages/searchroute.dart';
 import 'package:pinmybus/pages/institutional.dart';
 import 'package:pinmybus/pages/login.dart';
-import 'package:pinmybus/pages/map.dart';
+import 'package:pinmybus/pages/homepage.dart';
 import 'package:pinmybus/pages/routeinfo.dart';
 import 'package:pinmybus/pages/suggeststop.dart';
 
@@ -27,12 +27,12 @@ class PinMyBusApp extends StatelessWidget {
           primarySwatch: Colors.orange,
           primaryColor: Colors.orange,
           accentColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange)
+          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange),
           ),
       routes: {
         '/login': (context) => Login(),
-        '/home': (context) => Home(ModalRoute.of(context).settings.arguments),
-        '/map': (context) => MapPage(),
+        '/home': (context) => HomePage(),
+        '/searchRoute': (context) => SearchRoutePage(),
         '/buslist_stop': (context) =>
             BuslistStop(args: ModalRoute.of(context).settings.arguments),
         '/buslist_route': (context) =>
