@@ -63,6 +63,8 @@ class BusRoute {
     print(stopsComplete) ;
 
     for (var stop in response["routeStops"]) {
+      for (Stop stop in stopsComplete)
+        print(stop.toJsonNoOffset());
       this.routeStops.add(stopsComplete
           .firstWhere((element) => element.stopid == stop["stopId"]));
 

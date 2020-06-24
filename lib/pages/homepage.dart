@@ -47,6 +47,7 @@ class HomePageState extends State<HomePage> {
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GoogleMap(
+        zoomControlsEnabled: false,
         mapType: MapType.normal,
         initialCameraPosition: CameraPosition(target: locationData, zoom: 15),
         markers: markerStops,

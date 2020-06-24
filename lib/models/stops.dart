@@ -15,4 +15,10 @@ class Stop {
         'offset': offset.hour.toString().padLeft(2, '0') +
             offset.minute.toString().padLeft(2, '0'),
       };
+  Map<String, dynamic> toJsonNoOffset() => {
+        'location': [location.latitude, location.longitude],
+        'stopid': stopid,
+        'stopName': stopName,
+      };
+
 }

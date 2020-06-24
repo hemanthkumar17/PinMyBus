@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/utils/reminder.dart';
 import 'package:pinmybus/widgets/search.dart';
 import 'package:pinmybus/models/stops.dart';
@@ -50,6 +52,23 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
     });
   }
 
+  Future<void> _getRouteListByStop(Stop stop) async {
+    Map<String, dynamic> data = {
+      "startStop": stop
+          .stopid,
+    };
+    print(data);
+    final HttpsCallable callable =
+        CloudFunctions.instance.getHttpsCallable(functionName: "searchRoutes");
+    final HttpsCallableResult response = await callable.call(data);
+    List<BusRoute> routeList = [];
+    print(response.data);
+    for (var route in response.data) {
+      routeList.add(BusRoute.fromResponse(route));
+    }
+    Navigator.pushNamed(context, '/buslist_stop', arguments: {"routeList": routeList});
+  }
+
   List<Widget> generateCards() {
     List<Widget> _cardList = [];
 
@@ -71,26 +90,34 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
             child: Container(
                 width: MediaQuery.of(context).size.width / 2,
                 height: MediaQuery.of(context).size.height / 8,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.directions_bus),
-                    Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            child: Text(
-                              stop.stopName,
-                              style: TextStyle(fontSize: 20),
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
-                            )))
-                  ],
-                ))),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(Icons.directions_bus),
+                          Padding(
+                              padding: EdgeInsets.only(left: 10),
+                              child: Container(
+                                  width: MediaQuery.of(context).size.width / 3,
+                                  child: Text(
+                                    stop.stopName,
+                                    style: TextStyle(fontSize: 20),
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: false,
+                                  )))
+                        ],
+                      ),
+                      Text(
+                        "Tap to View Routes",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ]))),
       ),
-      onTap: () =>
-          _gotoLocation(stop.location.latitude, stop.location.longitude),
+      onTap: () => _getRouteListByStop(stop),
     );
   }
 
