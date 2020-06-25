@@ -8,7 +8,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/stops.dart';
-import 'package:pinmybus/utils/reminder.dart' ;
+import 'package:pinmybus/utils/reminder.dart';
 
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
@@ -26,7 +26,11 @@ class _LoginState extends State<Login> {
     super.initState();
   }
 
+  bool disabled = false;
   Future<FirebaseUser> _handleSignIn() async {
+    setState(() {
+      disabled = true;
+    });
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -40,8 +44,8 @@ class _LoginState extends State<Login> {
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
     await GlobalFunctions.getStops();
-    await Scheduler.initNotifications() ;
-    await _initializeData(user); //*
+    Scheduler.initNotifications();
+    _initializeData(user); //*
     return user;
   }
 
@@ -56,11 +60,7 @@ class _LoginState extends State<Login> {
         .once()
         .then((DataSnapshot snapshot) {
       if (snapshot.value == null) {
-        dataBase
-            .reference()
-            .child("userInfo")
-            .child(user.uid)
-            .set({
+        dataBase.reference().child("userInfo").child(user.uid).set({
           "contactNumber": "",
           "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
           "email": user.email,
@@ -132,32 +132,37 @@ class _LoginState extends State<Login> {
   }
 
   Widget _signInButton() {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(100.0),
-        color: Colors.white,
-      ),
-      child: RaisedButton(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-        onPressed: () {
-          _handleSignIn()
-              .then((FirebaseUser user) =>
-                  Navigator.pushNamed(context, '/home', arguments: user))
-              .catchError((e) => print(e));
-        },
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image(
-                  image: AssetImage("assets/images/google.png"), height: 35.0),
-            ],
+    if (disabled == false) {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100.0),
+          color: Colors.white,
+        ),
+        child: RaisedButton(
+          color: Colors.white,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+          onPressed: () {
+            _handleSignIn()
+                .then((FirebaseUser user) =>
+                    Navigator.pushNamed(context, '/home', arguments: user))
+                .catchError((e) => print(e));
+          },
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Image(
+                    image: AssetImage("assets/images/google.png"),
+                    height: 35.0),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else
+      return Container();
   }
 }

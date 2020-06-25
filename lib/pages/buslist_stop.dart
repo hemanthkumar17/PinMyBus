@@ -11,8 +11,6 @@ class BuslistStop extends StatefulWidget {
 }
 
 class _BuslistStopState extends State<BuslistStop> {
-  String stopname = 'insert_stop_name_here';
-  String busname = "bus name 1";
   String bustype = "Private";
   String busnumber = '0000';
   String details = 'Other details';
@@ -24,7 +22,13 @@ class _BuslistStopState extends State<BuslistStop> {
   void createWid() {
     routeWid = [];
     for (BusRoute route in widget.args["routeList"]) {
-      Stop stop = route.routeStops.firstWhere((element) => element.stopName == widget.args["stopName"]);
+      Stop stop = route.routeStops.firstWhere(
+          (element) => element.stopName == widget.args["stopName"], orElse: () {
+        return null;
+      });
+      if (stop == null) continue;
+      print(route.userData);
+      print(route.toJson());
       routeWid.add(Container(
           height: 100,
           color: Color.fromRGBO(255, 171, 0, .9),
@@ -41,7 +45,7 @@ class _BuslistStopState extends State<BuslistStop> {
                 Align(
                     alignment: Alignment(-.75, -.60),
                     child: Text(
-                      busname,
+                      route.userData.busName ?? "default",
                       style: TextStyle(fontSize: 25),
                     )),
                 Align(
@@ -55,7 +59,7 @@ class _BuslistStopState extends State<BuslistStop> {
                 Align(
                   alignment: Alignment(-.75, .50),
                   child: Text(
-                    bustype + ', ' + busnumber,
+                  route.userData.licenseNumber ?? "default",
                     style: TextStyle(fontSize: 15, color: Colors.black45),
                   ),
                 )
@@ -64,21 +68,19 @@ class _BuslistStopState extends State<BuslistStop> {
           )));
     }
     print(routeWid);
-    if (routeWid.isEmpty)
-      {routeWid = [
+    if (routeWid.isEmpty) {
+      routeWid = [
         Container(
             height: 100,
             color: Color.fromRGBO(255, 171, 0, .9),
-              child: Card(
-                  child: Center(
-                    child:Text("No routes exist",
-                    style: TextStyle(fontSize: 20)
-                  ),
-                  ),
-            ))  
+            child: Card(
+              child: Center(
+                child: Text("No routes exist", style: TextStyle(fontSize: 20)),
+              ),
+            ))
       ];
       print("empty");
-      }
+    }
   }
 
   @override
@@ -91,7 +93,7 @@ class _BuslistStopState extends State<BuslistStop> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.args["stopName"]),
+          title: Text(widget.args["stopName"]?? "default"),
           backgroundColor: Color.fromRGBO(255, 171, 0, .9),
         ),
         body: SingleChildScrollView(

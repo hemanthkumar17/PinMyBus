@@ -250,17 +250,14 @@ class _SearchRoutePageState extends State<SearchRoutePage> {
                               final HttpsCallableResult response =
                                   await callable.call(data);
                               List<BusRoute> routeList = [];
-                              List<Data> userData = [];
                               print(response.data);
                               for (var route in response.data) {
                                 routeList.add(BusRoute.fromResponse(route));
-                                userData.add(Data(route['name']));
                               }
 
                               Navigator.pushNamed(context, '/buslist_route',
                                   arguments: {
                                     "routeList": routeList,
-                                    "userData": userData
                                   });
                             }),
                         SizedBox(

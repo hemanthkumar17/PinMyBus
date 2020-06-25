@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/models/institute.dart';
 import 'stops.dart';
-import 'package:pinmybus/utils/reminder.dart' ;
+import 'package:pinmybus/utils/reminder.dart';
 
 const URL = "https://us-central1-pinmybus-staging.cloudfunctions.net";
 List<Stop> stopsComplete;
@@ -30,20 +30,24 @@ abstract class GlobalFunctions {
           LatLng(double.parse(item['location']['coordinates'][0].toString()),
               double.parse(item['location']['coordinates'][1].toString()))));
     }
+    getInstitutes();
     print(stopsComplete);
     // print(stops);
   }
 
-  static Future<void> getInstitutes() async {
-    final HttpsCallable callable = CloudFunctions.instance
-        .getHttpsCallable(functionName: "listInstitutes");
-    HttpsCallableResult response = await callable.call();
-    print(response.data);
+  static Future<List<Institute>> getInstitutes() async {
+    if (institutes != null) {
+      final HttpsCallable callable = CloudFunctions.instance
+          .getHttpsCallable(functionName: "listInstitutes");
+      HttpsCallableResult response = await callable.call();
+      print(response.data);
 
-    institutes = [];
-    for (var json in response.data) {
-      institutes.add(Institute.fromJson(json));
+      institutes = [];
+      for (var json in response.data) {
+        institutes.add(Institute.fromJson(json));
+      }
     }
+    return institutes;
   }
 
   static LatLng getLocation() => _location;

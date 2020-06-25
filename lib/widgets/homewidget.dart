@@ -54,8 +54,7 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
 
   Future<void> _getRouteListByStop(Stop stop) async {
     Map<String, dynamic> data = {
-      "startStop": stop
-          .stopid,
+      "startStop": stop.stopid,
     };
     print(data);
     final HttpsCallable callable =
@@ -66,7 +65,8 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
     for (var route in response.data) {
       routeList.add(BusRoute.fromResponse(route));
     }
-    Navigator.pushNamed(context, '/buslist_stop', arguments: {"routeList": routeList});
+    Navigator.pushNamed(context, '/buslist_stop',
+        arguments: {"routeList": routeList, "stopName": stop.stopName});
   }
 
   List<Widget> generateCards() {

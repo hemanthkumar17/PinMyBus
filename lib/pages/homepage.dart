@@ -53,7 +53,7 @@ class HomePageState extends State<HomePage> {
         markers: markerStops,
         onMapCreated: (GoogleMapController controller) {
             _controller.complete(controller);
-        }
+        },
       ),
     );
   }

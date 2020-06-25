@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/models/globals.dart';
+import 'package:pinmybus/models/userData.dart';
 import 'dart:convert';
 
 import 'stops.dart';
@@ -14,9 +15,9 @@ class BusRoute {
   List<String> recList;
   List<Stop> routeStops;
   TimeOfDay startTime;
-  String ownerId;
   String routeId;
-  String ownerName;
+
+  BusData userData;
 
   BusRoute(this.name, this.recMode, this.recList);
 
@@ -29,9 +30,10 @@ class BusRoute {
         'routeStops': routeStops.map((e) => e.toJson()).toList(),
         'startTime': startTime.hour.toString().padLeft(2, '0') +
             startTime.minute.toString().padLeft(2, '0'),
-        'ownerId': ownerId,
+        'ownerId': userData.id,
         'routeId': routeId,
-        'ownerName': ownerName,
+        'busName': userData.busName,
+        'ownerName': userData.ownerName,
       };
 
   BusRoute.fromResponse(response) {
@@ -55,23 +57,26 @@ class BusRoute {
         hour: int.parse(startTimeTemp.substring(0, 2)),
         minute: int.parse(startTimeTemp.substring(2)));
 
-    this.ownerId = response["ownerId"];
+    userData = BusData.fromJson(response);
 
     this.routeStops = [];
-    
-    print(response['routeStops']) ;
-    print(stopsComplete) ;
+
+    print(response['routeStops']);
+    print(stopsComplete);
 
     for (var stop in response["routeStops"]) {
-      for (Stop stop in stopsComplete)
-        print(stop.toJsonNoOffset());
-      this.routeStops.add(stopsComplete
-          .firstWhere((element) => element.stopid == stop["stopId"]));
+      if (stopsComplete.firstWhere(
+              (element) => element.stopid == stop["stopId"],
+              orElse: () => null) !=
+          null) {
+        this.routeStops.add(stopsComplete
+            .firstWhere((element) => element.stopid == stop["stopId"]));
 
-      String timeOfArrival = stop["timeOfArrival"].toString().padLeft(4, "0");
-      this.routeStops.last.offset = TimeOfDay(
-          hour: int.parse(timeOfArrival.substring(0, 2)),
-          minute: int.parse(timeOfArrival.substring(2)));
+        String timeOfArrival = stop["timeOfArrival"].toString().padLeft(4, "0");
+        this.routeStops.last.offset = TimeOfDay(
+            hour: int.parse(timeOfArrival.substring(0, 2)),
+            minute: int.parse(timeOfArrival.substring(2)));
+      }
     }
     this.start = routeStops.first;
     this.end = routeStops.last;
