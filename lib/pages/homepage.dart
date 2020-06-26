@@ -68,14 +68,14 @@ class HomePageState extends State<HomePage> {
           drawer: Drawer(
             child: ListView(
               children: <Widget>[
-                DrawerHeader(child: Column(children: <Widget>[Container()])),
-                ListTile(
-                  leading: Icon(IconData(59389, fontFamily: 'MaterialIcons')),
-                  title: Text('Profile'),
-                  onTap: () {
-                    // Navigator.pushNamed(context, '/profile');
-                  },
-                ),
+                // DrawerHeader(child: Column(children: <Widget>[Container()])),
+                // ListTile(
+                //   leading: Icon(IconData(59389, fontFamily: 'MaterialIcons')),
+                //   title: Text('Profile'),
+                //   onTap: () {
+                //     // Navigator.pushNamed(context, '/profile');
+                //   },
+                // ),
                 ListTile(
                   leading: Icon(Icons.search),
                   title: Text('Search for a Route'),
