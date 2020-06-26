@@ -22,11 +22,20 @@ class Routeinfo extends StatefulWidget {
 }
 
 class _RouteinfoState extends State<Routeinfo> {
+  BitmapDescriptor pinbus;
+  
   Set<Marker> markerStops = {};
   Marker current;
 
   Timer timer;
-
+  void custompin() async {
+    var pinbus = await BitmapDescriptor.fromAssetImage(
+      ImageConfiguration(devicePixelRatio: 2.5),
+      'assets/pinbus.png');
+      setState(() {
+        this.pinbus=pinbus;
+      });
+   }
   void startTime() {
     FirebaseDatabase.instance
         .reference()
@@ -42,9 +51,8 @@ class _RouteinfoState extends State<Routeinfo> {
           markerId: MarkerId('driver'),
           position: LatLng(data["latitude"], data["longitude"]),
           infoWindow: InfoWindow(title: 'Bus'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueRed,
-          ),
+          icon: pinbus
+          ,
         );
         print("notNull");
       } else
