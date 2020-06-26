@@ -1,7 +1,6 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
-import 'package:pinmybus_driver/delayed_animation.dart';
-import 'delayed_animation.dart';
+import 'package:pinmybus/delayed_animation.dart';
 
 
 class LoadingPage extends StatefulWidget {
