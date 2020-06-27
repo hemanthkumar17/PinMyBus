@@ -98,6 +98,13 @@ class HomePageState extends State<HomePage> {
                   },
                 ),
                 ListTile(
+                  leading: Icon(Icons.alarm),
+                  title: Text('Reminders'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/reminders');
+                  },
+                ),
+                ListTile(
                   leading: Icon(IconData(59513, fontFamily: 'MaterialIcons')),
                   title: Text('Logout'),
                   onTap: () {

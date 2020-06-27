@@ -59,6 +59,7 @@ class _ReminderState extends State<Reminder> {
         ),
       );
     });
+    if (data.isEmpty) data.add(ListTile(title: Text("No Reminders Set")));
     return data;
   }
 
