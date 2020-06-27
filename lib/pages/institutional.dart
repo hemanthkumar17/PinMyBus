@@ -208,33 +208,6 @@ class _InstitutePageState extends State<InstitutePage> {
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(255, 171, 0, .9),
         ),
-        body: FutureBuilder(
-            future: GlobalFunctions.getInstitutes(),
-            builder: (BuildContext context,
-                AsyncSnapshot<List<Institute>> snapshot) {
-              if (snapshot.connectionState != ConnectionState.done)
-                return Center(
-                    child: AvatarGlow(
-                        endRadius: 150,
-                        duration: Duration(seconds: 2),
-                        glowColor: Color.fromRGBO(255, 171, 0, .9),
-                        repeat: true,
-                        repeatPauseDuration: Duration(seconds: 2),
-                        startDelay: Duration(seconds: 1),
-                        child: Container(
-                            width: 150,
-                            padding: const EdgeInsets.all(20.0),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                // color: Colors.white,
-                                borderRadius: BorderRadius.circular(100)),
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                            ))));
-              if (snapshot.hasData) {
-                return completePage;
-              }
-              return Container();
-            }));
+        body: completePage);
   }
 }

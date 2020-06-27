@@ -284,6 +284,7 @@ class _RouteinfoState extends State<Routeinfo> {
 
   Widget _buildGoogleMap(BuildContext context, LatLng userLocation) {
     markerStops = {};
+  Set<Polyline> _polylines = {};
     for (var stop in widget.route.routeStops) {
       markerStops.add(
         Marker(
@@ -295,6 +296,14 @@ class _RouteinfoState extends State<Routeinfo> {
           ),
         ),
       );
+      if(widget.route.routeStops.last.stopName != stop.stopName)
+        _polylines.add(Polyline(
+            polylineId: PolylineId(stop.location.toString()),
+            visible: true,
+            //latlng is List<LatLng>
+            points: [stop.location, widget.route.routeStops.elementAt(widget.route.routeStops.indexOf(stop) + 1).location],
+            color: Colors.blue,
+        ));
     }
     markerStops.add(
       Marker(
@@ -309,6 +318,9 @@ class _RouteinfoState extends State<Routeinfo> {
     if (current != null) markerStops.add(current);
     print("Hello");
     print(markerStops.map((e) => e.position).toList());
+    print(_polylines.map((e) => e.points).toList());
+  
+
 
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -324,6 +336,7 @@ class _RouteinfoState extends State<Routeinfo> {
         zoomControlsEnabled: false,
         markers: markerStops,
         onCameraMove: (CameraPosition position) {},
+        polylines: _polylines,
       ),
     );
   }
