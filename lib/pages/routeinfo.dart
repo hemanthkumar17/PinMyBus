@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:pinmybus/data/locationstream.dart';
@@ -23,19 +24,19 @@ class Routeinfo extends StatefulWidget {
 
 class _RouteinfoState extends State<Routeinfo> {
   BitmapDescriptor pinbus;
-  
+
   Set<Marker> markerStops = {};
   Marker current;
 
   Timer timer;
   void custompin() async {
     var pinbus = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(devicePixelRatio: 2.5),
-      'assets/pinbus.png');
-      setState(() {
-        this.pinbus=pinbus;
-      });
-   }
+        ImageConfiguration(devicePixelRatio: 2.5), 'assets/pinbus.png');
+    setState(() {
+      this.pinbus = pinbus;
+    });
+  }
+
   void startTime() {
     FirebaseDatabase.instance
         .reference()
@@ -51,8 +52,7 @@ class _RouteinfoState extends State<Routeinfo> {
           markerId: MarkerId('driver'),
           position: LatLng(data["latitude"], data["longitude"]),
           infoWindow: InfoWindow(title: 'Bus'),
-          icon: pinbus
-          ,
+          icon: pinbus,
         );
         print("notNull");
       } else
@@ -91,84 +91,93 @@ class _RouteinfoState extends State<Routeinfo> {
     return Padding(
       padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
       child: Card(
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: Colors.white70),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Container(
-              width: MediaQuery.of(context).size.width / 2,
-              height: MediaQuery.of(context).size.height / 8,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(Icons.directions_bus),
-                        Padding(
-                            padding: EdgeInsets.only(left: 10),
-                            child: Container(
-                                width: MediaQuery.of(context).size.width / 3,
-                                child: Text(
-                                  stop.stopName,
-                                  style: TextStyle(fontSize: 20),
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: false,
-                                )))
-                      ],
-                    ),
-                    Container(
-                      child: FlatButton(
-                        color: Colors.orange,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                          height: 30,
-                          width: 80,
-                          child: Center(
-                            child: Text(
-                              "Set a Reminder",
-                              style:
-                                  TextStyle(fontSize: 11, color: Colors.black),
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          var dateNow = DateTime.now();
-                          DateTime date = DateTime(
-                            dateNow.year,
-                            dateNow.month,
-                            dateNow.day,
-                            stop.offset.hour,
-                            stop.offset.minute,
-                          );
-                          await Scheduler.addNotification(
-                            date,
-                            widget.route.name,
-                            stop,
-                          );
-                          showDialog<void>(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                  content: Container(
-                                    child: Text("Reminder Set"),
-                                  ),
-                                  actions: [
-                                    FlatButton(
-                                        child: Text('OK'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        }),
-                                  ]);
-                            },
-                          );
-                        },
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: Colors.white70),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Container(
+          width: MediaQuery.of(context).size.width / 2,
+          height: MediaQuery.of(context).size.height / 8,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.directions_bus),
+                  Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Container(
+                          width: MediaQuery.of(context).size.width / 3,
+                          child: Text(
+                            stop.stopName,
+                            style: TextStyle(fontSize: 20),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
+                          )))
+                ],
+              ),
+              Container(
+                child: FlatButton(
+                  color: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Container(
+                    height: 30,
+                    width: 80,
+                    child: Center(
+                      child: Text(
+                        "Set a Reminder",
+                        style: TextStyle(fontSize: 11, color: Colors.black),
                       ),
                     ),
-                  ]))),
+                  ),
+                  onPressed: () async {
+                    var dateNow = DateTime.now();
+                    DateTime date = DateTime(
+                      dateNow.year,
+                      dateNow.month,
+                      dateNow.day,
+                      stop.offset.hour,
+                      stop.offset.minute,
+                    );
+                    DatePicker.showDateTimePicker(context, currentTime: date,
+                        onChanged: (time) {
+                      print("Changed $time");
+                    }, onConfirm: (time) async {
+                      await Scheduler.addNotification(
+                        date,
+                        widget.route.name,
+                        stop,
+                      );
+                      showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: Container(
+                              child: Text("Reminder Set"),
+                            ),
+                            actions: [
+                              FlatButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -231,7 +240,13 @@ class _RouteinfoState extends State<Routeinfo> {
                   children = <Widget>[
                     Stack(children: <Widget>[
                       _buildGoogleMap(context, snapshot.data),
-                      Padding(padding: EdgeInsets.only(top:MediaQuery.of(context).padding.top),child:IconButton(icon:Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context),)),
+                      Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top),
+                          child: IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () => Navigator.pop(context),
+                          )),
                       Container(
                           height: MediaQuery.of(context).size.height,
                           width: MediaQuery.of(context).size.width,
@@ -284,7 +299,7 @@ class _RouteinfoState extends State<Routeinfo> {
 
   Widget _buildGoogleMap(BuildContext context, LatLng userLocation) {
     markerStops = {};
-  Set<Polyline> _polylines = {};
+    Set<Polyline> _polylines = {};
     for (var stop in widget.route.routeStops) {
       markerStops.add(
         Marker(
@@ -296,13 +311,18 @@ class _RouteinfoState extends State<Routeinfo> {
           ),
         ),
       );
-      if(widget.route.routeStops.last.stopName != stop.stopName)
+      if (widget.route.routeStops.last.stopName != stop.stopName)
         _polylines.add(Polyline(
-            polylineId: PolylineId(stop.location.toString()),
-            visible: true,
-            //latlng is List<LatLng>
-            points: [stop.location, widget.route.routeStops.elementAt(widget.route.routeStops.indexOf(stop) + 1).location],
-            color: Colors.blue,
+          polylineId: PolylineId(stop.location.toString()),
+          visible: true,
+          //latlng is List<LatLng>
+          points: [
+            stop.location,
+            widget.route.routeStops
+                .elementAt(widget.route.routeStops.indexOf(stop) + 1)
+                .location
+          ],
+          color: Colors.blue,
         ));
     }
     markerStops.add(
@@ -319,8 +339,6 @@ class _RouteinfoState extends State<Routeinfo> {
     print("Hello");
     print(markerStops.map((e) => e.position).toList());
     print(_polylines.map((e) => e.points).toList());
-  
-
 
     return Container(
       height: MediaQuery.of(context).size.height,

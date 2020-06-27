@@ -332,6 +332,7 @@ class Scheduler {
       importance: Importance.Max,
       priority: Priority.High,
       ticker: 'ticker',
+      playSound: true ,
     );
     var iOSPlatformChannelSpecifics = IOSNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
@@ -341,12 +342,13 @@ class Scheduler {
         await flutterLocalNotificationsPlugin.pendingNotificationRequests();
     var id = pending.length;
     id += 1;
+    scheduleDate.subtract(Duration(minutes: 1)) ;
     if (!checkAvail(id, pending)) while (!checkAvail(id, pending)) id += 1;
     print("Reminder $id Set On $scheduleDate");
     await flutterLocalNotificationsPlugin.schedule(
       id,
       "Reminder ${stop.stopName}",
-      "Route $name : Bus Will Reach Stop ${stop.stopName} In 5 mins",
+      "Route $name : Bus Will Reach Stop ${stop.stopName}",
       scheduleDate,
       platformChannelSpecifics,
       androidAllowWhileIdle: true,
@@ -436,7 +438,7 @@ class Scheduler {
     await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
       id,
       'Reminder ${stop.stopName}',
-      "Route $name : Bus Will Reach Stop ${stop.stopName} In 5 mins",
+      "Route $name : Bus Will Reach Stop ${stop.stopName}",
       day,
       time,
       platformChannelSpecifics,
