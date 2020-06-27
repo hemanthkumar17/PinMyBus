@@ -13,15 +13,7 @@ class BuslistRoute extends StatefulWidget {
 }
 
 class _BuslistRouteState extends State<BuslistRoute> {
-  String stopname = 'insert_stop_name_here';
-  String busname = "bus name 1";
-  String bustype = "Private";
-  String busnumber = '0000';
-  String details = 'Other details';
-  String deptimehr = '00';
-  String deptimemin = '00';
-  String arrtimehr = '00';
-  String arrtimemin = '00';
+
 
   List<Widget> routeWid = [];
 
@@ -84,7 +76,7 @@ class _BuslistRouteState extends State<BuslistRoute> {
                 Align(
                   alignment: Alignment(-.75, .50),
                   child: Text(
-                    bustype + ', ' + busnumber,
+                    route.userData.licenseNumber,
                     style: TextStyle(fontSize: 15, color: Colors.black45),
                   ),
                 )
