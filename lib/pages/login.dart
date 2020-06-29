@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:pinmybus/delayed_animation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -10,6 +13,8 @@ import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/stops.dart';
 import 'package:pinmybus/utils/reminder.dart';
 
+import 'package:http/http.dart' as http;
+
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
 
@@ -20,7 +25,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  bool _isLoggedIn;
   @override
   void initState() {
     super.initState();
@@ -48,6 +53,33 @@ class _LoginState extends State<Login> {
     Scheduler.initNotifications();
     _initializeData(user); //*
     return user;
+  }
+
+  Future<void> _facebookLogin() async {
+    final facebookLogin = FacebookLogin();
+    final result = await facebookLogin.logInWithReadPermissions(['email']);
+    print(result.errorMessage);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final token = result.accessToken.token;
+        final graphResponse = await http.get(
+            'https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
+        final profile = jsonDecode(graphResponse.body);
+        print("Profile");
+        print(profile);
+        setState(() {
+          final userProfile = profile;
+          _isLoggedIn = true;
+        });
+        break;
+
+      case FacebookLoginStatus.cancelledByUser:
+        setState(() => _isLoggedIn = false);
+        break;
+      case FacebookLoginStatus.error:
+        setState(() => _isLoggedIn = false);
+        break;
+    }
   }
 
 //*Dismantle after the backend is ready to use
@@ -125,6 +157,11 @@ class _LoginState extends State<Login> {
                 height: 30.0,
               ),
               DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
+              DelayedAnimation(
+                  delay: 500 + 2500,
+                  child: RaisedButton(onPressed: () {
+                    _facebookLogin();
+                  }))
             ],
           ),
         ),

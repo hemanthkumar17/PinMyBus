@@ -7,18 +7,16 @@ import 'package:pinmybus/models/globals.dart';
 
 import 'package:pinmybus/widgets/homewidget.dart';
 
-
 class HomePage extends StatefulWidget {
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-
-
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Widget _buildGoogleMap(BuildContext context, LatLng locationData, Completer<GoogleMapController> _controller) {
+  Widget _buildGoogleMap(BuildContext context, LatLng locationData,
+      Completer<GoogleMapController> _controller) {
     Set<Marker> markerStops = {};
     for (var stop in stopsComplete) {
       markerStops.add(
@@ -52,7 +50,7 @@ class HomePageState extends State<HomePage> {
         initialCameraPosition: CameraPosition(target: locationData, zoom: 15),
         markers: markerStops,
         onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);
+          _controller.complete(controller);
         },
       ),
     );
@@ -60,8 +58,7 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-  Completer<GoogleMapController> _controller = Completer();
-
+    Completer<GoogleMapController> _controller = Completer();
 
     return WillPopScope(
         child: Scaffold(
@@ -84,14 +81,14 @@ class HomePageState extends State<HomePage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(IconData(59471, fontFamily: 'MaterialIcons')),
+                  leading: Icon(Icons.account_balance),
                   title: Text('Instituitional Buses'),
                   onTap: () {
                     Navigator.pushNamed(context, '/insti');
                   },
                 ),
                 ListTile(
-                  leading: Icon(IconData(58727, fontFamily: 'MaterialIcons')),
+                  leading: Icon(Icons.add_location),
                   title: Text('Suggest Stop'),
                   onTap: () {
                     Navigator.pushNamed(context, '/suggest');
@@ -105,7 +102,7 @@ class HomePageState extends State<HomePage> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(IconData(59513, fontFamily: 'MaterialIcons')),
+                  leading: Icon(Icons.exit_to_app),
                   title: Text('Logout'),
                   onTap: () {
                     // _signOut();
@@ -162,7 +159,8 @@ class HomePageState extends State<HomePage> {
                         children = <Widget>[
                           Stack(
                             children: <Widget>[
-                              _buildGoogleMap(context, snapshot.data, _controller),
+                              _buildGoogleMap(
+                                  context, snapshot.data, _controller),
                               HomeStackWidget(_controller, _scaffoldKey),
                             ],
                           )
