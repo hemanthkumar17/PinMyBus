@@ -15,6 +15,8 @@ import 'package:pinmybus/utils/reminder.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../delayed_animation.dart';
+
 class Login extends StatefulWidget {
   Login({Key key}) : super(key: key);
 
@@ -156,12 +158,76 @@ class _LoginState extends State<Login> {
               SizedBox(
                 height: 30.0,
               ),
-              DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
-              DelayedAnimation(
-                  delay: 500 + 2500,
-                  child: RaisedButton(onPressed: () {
-                    _facebookLogin();
-                  }))
+              Container(
+                width: 300,
+                height: 200,
+                // color: Color.fromRGBO(255, 171, 0, .9),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Color.fromRGBO(255, 171, 0, .9),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height : 10,
+                    ),
+                    DelayedAnimation(
+                      child: Text(
+                        "Sign in using your ...",
+                        style: TextStyle(fontSize: 15.0, color: color),
+                      ),
+                      delay: 500 + 2500,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    DelayedAnimation(delay: 500 + 2500, child: _signInButton()),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    DelayedAnimation(
+                        delay: 500 + 2500,
+                        child: RaisedButton(
+                          // color: Color.fromRGBO(255, 171, 0, .9),
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100)),
+                          onPressed: () {
+                            _facebookLogin();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                  width: 50,
+                                  height: 50,
+                                  // color: Colors.white,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    color: Colors.white,
+                                  ),
+                                  child: Image(
+                                      image: AssetImage(
+                                          "assets/images/facebook.png"),
+                                      height: 35.0),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  'Facebook account',
+                                  style: TextStyle(color: Colors.black),
+                                )
+                              ],
+                            ),
+                          ),
+                        ))
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -177,6 +243,7 @@ class _LoginState extends State<Login> {
           color: Colors.white,
         ),
         child: RaisedButton(
+          // color: Color.fromRGBO(255, 171, 0, .9),
           color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
@@ -192,9 +259,25 @@ class _LoginState extends State<Login> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Image(
-                    image: AssetImage("assets/images/google.png"),
-                    height: 35.0),
+                Container(
+                  width: 50,
+                  height: 50,
+                  // color: Colors.white,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30.0),
+                    color: Colors.white,
+                  ),
+                  child: Image(
+                      image: AssetImage("assets/images/google.png"),
+                      height: 35.0),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  'Google account',
+                  style: TextStyle(color: Colors.black),
+                )
               ],
             ),
           ),
