@@ -183,7 +183,7 @@ class _LoginState extends State<Login> {
               ),
               Container(
                 width: 300,
-                height: 200,
+                height: 300,
                 // color: Color.fromRGBO(255, 171, 0, .9),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30.0),
@@ -209,59 +209,99 @@ class _LoginState extends State<Login> {
                       height: 10.0,
                     ),
                     DelayedAnimation(
-                        delay: 500 + 2500,
-                        child: RaisedButton(
-                          // color: Color.fromRGBO(255, 171, 0, .9),
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(100)),
-                          onPressed: () {
-                            _facebookLogin();
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  // color: Colors.white,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    color: Colors.white,
-                                  ),
-                                  child: Image(
-                                      image: AssetImage(
-                                          "assets/images/facebook.png"),
-                                      height: 35.0),
+                      delay: 500 + 2500,
+                      child: RaisedButton(
+                        // color: Color.fromRGBO(255, 171, 0, .9),
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100)),
+                        onPressed: () {
+                          _facebookLogin();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 50,
+                                height: 50,
+                                // color: Colors.white,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  color: Colors.white,
                                 ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  'Facebook account',
-                                  style: TextStyle(color: Colors.black),
-                                )
-                              ],
-                            ),
+                                child: Image(
+                                    image: AssetImage(
+                                        "assets/images/facebook.png"),
+                                    height: 35.0),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                'Facebook account',
+                                style: TextStyle(color: Colors.black),
+                              )
+                            ],
                           ),
-                        )),
+                        ),
+                      ),
+                    ),
                     SizedBox(
                       height: 10,
                     ),
                     DelayedAnimation(
                       delay: 500 + 2500,
-                      child: RaisedButton(
-                        child: Text("Sign in with phone number"),
-                        onPressed: () =>
-                            Navigator.pushNamed(context, '/phoneauth'),
-                      ),
+                      child: _phoneAuthButton(),
                     )
                   ],
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _phoneAuthButton() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100.0),
+        color: Colors.white,
+      ),
+      child: RaisedButton(
+        // color: Color.fromRGBO(255, 171, 0, .9),
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        onPressed: () {
+          Navigator.pushNamed(context, '/phoneauth');
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 50,
+                height: 50,
+                // color: Colors.white,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.white,
+                ),
+                child: Icon(Icons.phone_android),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Phone Number',
+                style: TextStyle(color: Colors.black),
+              )
             ],
           ),
         ),
