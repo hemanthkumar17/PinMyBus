@@ -60,6 +60,10 @@ class _LoginState extends State<Login> {
   Future<void> _facebookLogin() async {
     final facebookLogin = FacebookLogin();
     final result = await facebookLogin.logInWithReadPermissions(['email']);
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final _result = _auth.signInWithCredential(
+        FacebookAuthProvider.getCredential(
+            accessToken: result.accessToken.token));
     print(result.errorMessage);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
@@ -69,9 +73,28 @@ class _LoginState extends State<Login> {
         final profile = jsonDecode(graphResponse.body);
         print("Profile");
         print(profile);
-        setState(() {
+        setState(() async {
           final userProfile = profile;
-          _isLoggedIn = true;
+          await GlobalFunctions.getStops();
+          await GlobalFunctions.getInstitutes();
+          Scheduler.initNotifications();
+          // final FirebaseDatabase dataBase = FirebaseDatabase.instance;
+          // await dataBase
+          //     .reference()
+          //     .child("userInfo")
+          //     .child(user.uid)
+          //     .once()
+          //     .then((DataSnapshot snapshot) {
+          //   if (snapshot.value == null) {
+          //     dataBase.reference().child("userInfo").child(user.uid).set({
+          //       "contactNumber": "",
+          //       "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
+          //       "email": user.email,
+          //       "status": true,
+          //       "userType": "default",
+          //     });
+          //   }
+          // });
         });
         break;
 
@@ -169,7 +192,7 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: <Widget>[
                     SizedBox(
-                      height : 10,
+                      height: 10,
                     ),
                     DelayedAnimation(
                       child: Text(
@@ -224,7 +247,18 @@ class _LoginState extends State<Login> {
                               ],
                             ),
                           ),
-                        ))
+                        )),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    DelayedAnimation(
+                      delay: 500 + 2500,
+                      child: RaisedButton(
+                        child: Text("Sign in with phone number"),
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/phoneauth'),
+                      ),
+                    )
                   ],
                 ),
               ),

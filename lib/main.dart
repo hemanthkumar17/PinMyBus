@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinmybus/pages/buslist_route.dart';
 import 'package:pinmybus/pages/buslist_stop.dart';
+import 'package:pinmybus/pages/phoneauth.dart';
 import 'package:pinmybus/pages/searchroute.dart';
 import 'package:pinmybus/pages/institutional.dart';
 import 'package:pinmybus/pages/login.dart';
 import 'package:pinmybus/pages/homepage.dart';
 import 'package:pinmybus/pages/routeinfo.dart';
 import 'package:pinmybus/pages/suggeststop.dart';
-import 'package:pinmybus/utils/reminder.dart' ;
+import 'package:pinmybus/utils/reminder.dart';
 
 void main() async {
   runApp(PinMyBusApp());
@@ -25,11 +26,11 @@ class PinMyBusApp extends StatelessWidget {
       title: "Pin My Bus",
       home: Login(),
       theme: ThemeData(
-          primarySwatch: Colors.orange,
-          primaryColor: Colors.orange,
-          accentColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange),
-          ),
+        primarySwatch: Colors.orange,
+        primaryColor: Colors.orange,
+        accentColor: Colors.black,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.orange),
+      ),
       routes: {
         '/login': (context) => Login(),
         '/home': (context) => HomePage(),
@@ -43,6 +44,7 @@ class PinMyBusApp extends StatelessWidget {
         '/suggest': (context) => MapPickerPage(),
         '/insti': (context) => InstitutePage(),
         '/reminders': (context) => Reminder(),
+        '/phoneauth': (context) => PhoneAuthScreen(),
       },
     );
   }

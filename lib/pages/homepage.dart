@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:pinmybus/data/locationstream.dart';
 import 'package:pinmybus/models/globals.dart';
@@ -14,6 +15,36 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    Timer timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      Geolocator().isLocationServiceEnabled().then((value) async {
+        print(value);
+        if (value == false) {
+          await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Error"),
+                  content: Text("Please Enable location services"),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Done"),
+                      onPressed: () {
+                        Geolocator().isLocationServiceEnabled().then((value) {
+                          if (value == true) Navigator.pop(context);
+                        });
+                      },
+                    )
+                  ],
+                );
+              });
+        }
+      });
+    });
+  }
 
   Widget _buildGoogleMap(BuildContext context, LatLng locationData,
       Completer<GoogleMapController> _controller) {
@@ -118,7 +149,33 @@ class HomePageState extends State<HomePage> {
               child: StreamBuilder<LatLng>(
                 stream: LocationService().locationStream,
                 builder: (context, snapshot) {
+                  print(snapshot.data);
                   List<Widget> children;
+                  Geolocator().isLocationServiceEnabled().then((value) async {
+                    print(value);
+                    if (value == false) {
+                      await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Error"),
+                              content: Text("Please Enable location services"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text("Done"),
+                                  onPressed: () {
+                                    Geolocator()
+                                        .isLocationServiceEnabled()
+                                        .then((value) {
+                                      if (value == true) Navigator.pop(context);
+                                    });
+                                  },
+                                )
+                              ],
+                            );
+                          });
+                    }
+                  });
                   if (snapshot.hasError) {
                     children = <Widget>[
                       Icon(
@@ -156,6 +213,35 @@ class HomePageState extends State<HomePage> {
                         ];
                         break;
                       case ConnectionState.active:
+                        Geolocator()
+                            .isLocationServiceEnabled()
+                            .then((value) async {
+                          print(value);
+                          if (value == false) {
+                            await showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Error"),
+                                    content:
+                                        Text("Please Enable location services"),
+                                    actions: <Widget>[
+                                      FlatButton(
+                                        child: Text("Done"),
+                                        onPressed: () {
+                                          Geolocator()
+                                              .isLocationServiceEnabled()
+                                              .then((value) {
+                                            if (value == true)
+                                              Navigator.pop(context);
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  );
+                                });
+                          }
+                        });
                         children = <Widget>[
                           Stack(
                             children: <Widget>[
