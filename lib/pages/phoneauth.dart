@@ -226,10 +226,8 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                   children: <Widget>[
                     Text(
                       "Login",
-                      style: TextStyle(
-                          color: Colors.lightBlue,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w500),
+                      style:
+                          TextStyle(fontSize: 36, fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       height: 16,
@@ -281,7 +279,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                           _otpController.clear();
                           _showPopUp(context);
                         },
-                        color: Colors.blue,
+                        color: Colors.orange,
                       ),
                     )
                   ],

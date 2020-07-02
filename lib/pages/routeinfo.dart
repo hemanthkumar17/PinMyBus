@@ -313,6 +313,7 @@ class _RouteinfoState extends State<Routeinfo> {
       );
       if (widget.route.routeStops.last.stopName != stop.stopName)
         _polylines.add(Polyline(
+          width: 5,
           polylineId: PolylineId(stop.location.toString()),
           visible: true,
           //latlng is List<LatLng>

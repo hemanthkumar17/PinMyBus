@@ -43,7 +43,7 @@ class HomePageState extends State<HomePage> {
         position: locationData,
         infoWindow: InfoWindow(title: "You"),
         icon: BitmapDescriptor.defaultMarkerWithHue(
-          BitmapDescriptor.hueOrange,
+          BitmapDescriptor.hueBlue,
         ),
       ),
     );
