@@ -19,7 +19,8 @@ class _InstitutePageState extends State<InstitutePage> {
   TextEditingController _codeController = TextEditingController();
   TextEditingController _licensenoController = TextEditingController();
 
-  Future<List<BusRoute>> _getInstituteRoutes() async {
+  Future<void> _getInstituteRoutes() async {
+    print(GlobalFunctions.institutes.map((e) => e.toJson()).toList());
     Institute selected = GlobalFunctions.institutes
         .firstWhere((element) => element.name == text);
     Map<String, dynamic> dataJson = {
@@ -29,18 +30,13 @@ class _InstitutePageState extends State<InstitutePage> {
         "searchKey": _codeController.text
       }
     };
-    final HttpsCallable callable =
-        CloudFunctions.instance.getHttpsCallable(functionName: "byCodeRoutes");
-    HttpsCallableResult response = await callable.call(dataJson);
-
-    List<BusRoute> routeList = [];
-    for (var route in response.data) {
-      routeList.add(BusRoute.fromResponse(route));
-    }
-    return routeList;
+    Navigator.pushReplacementNamed(context, '/buslist_route',
+        arguments: {"data": dataJson, "function": "byCodeRoutes"});
   }
 
   Future<void> searchStop(BuildContext context) async {
+    print(GlobalFunctions.institutes);
+    print(GlobalFunctions.institutes.map((e) => e.toJson()).toList());
     var res = await showSearch(context: context, delegate: Institutesearch());
     setState(() {
       text = res.name;
@@ -177,10 +173,7 @@ class _InstitutePageState extends State<InstitutePage> {
               ),
               RaisedButton(
                 onPressed: () async {
-                  List<BusRoute> routeList = await _getInstituteRoutes();
-                  Map args = {"routeList": routeList};
-                  Navigator.pushReplacementNamed(context, '/buslist_route',
-                      arguments: args);
+                  await _getInstituteRoutes();
                 },
                 color: Color.fromRGBO(255, 171, 0, .9),
                 child: Container(

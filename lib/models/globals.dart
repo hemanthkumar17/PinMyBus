@@ -36,7 +36,8 @@ abstract class GlobalFunctions {
   }
 
   static Future<List<Institute>> getInstitutes() async {
-    if (institutes != null) {
+    print(institutes);
+    if (institutes == null) {
       final HttpsCallable callable = CloudFunctions.instance
           .getHttpsCallable(functionName: "listInstitutes");
       HttpsCallableResult response = await callable.call();

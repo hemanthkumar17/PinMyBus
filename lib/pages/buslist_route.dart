@@ -1,10 +1,11 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/models/userData.dart';
+import 'package:pinmybus/widgets/loadingpagewidget.dart';
 
 class BuslistRoute extends StatefulWidget {
-
   final Map args;
   BuslistRoute({Key key, @required this.args}) : super(key: key);
 
@@ -13,20 +14,32 @@ class BuslistRoute extends StatefulWidget {
 }
 
 class _BuslistRouteState extends State<BuslistRoute> {
-
-
+  List<BusRoute> routeList = [];
   List<Widget> routeWid = [];
 
   @override
   void initState() {
     super.initState();
+  }
+
+  Future<bool> _getRouteListByRoute() async {
+    print(widget.args);
+    final HttpsCallable callable = CloudFunctions.instance
+        .getHttpsCallable(functionName: widget.args["function"]);
+    final HttpsCallableResult response =
+        await callable.call(widget.args["data"]);
+    print(response.data);
+    for (var route in response.data) {
+      routeList.add(BusRoute.fromResponse(route));
+    }
     createWid();
+    return true;
   }
 
   void createWid() {
-  List<BusRoute> routeList = widget.args["routeList"];
     routeWid = [];
     for (var route in routeList) {
+      print(route.userData.toJson());
       routeWid.add(Container(
           height: 100,
           color: Color.fromRGBO(255, 171, 0, .9),
@@ -42,7 +55,8 @@ class _BuslistRouteState extends State<BuslistRoute> {
                 ),
                 Align(
                     alignment: Alignment(-.75, -.60),
-                    child: Text("Owner",
+                    child: Text(
+                      route.userData.ownerName,
                       style: TextStyle(fontSize: 25),
                     )),
                 Align(
@@ -115,14 +129,23 @@ class _BuslistRouteState extends State<BuslistRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Routes'),
-          backgroundColor: Color.fromRGBO(255, 171, 0, .9),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: routeWid,
-          ),
-        ));
+      appBar: AppBar(
+        title: Text('Routes'),
+        backgroundColor: Color.fromRGBO(255, 171, 0, .9),
+      ),
+      body: FutureBuilder(
+        future: _getRouteListByRoute(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData)
+            return SingleChildScrollView(
+              child: Column(
+                children: routeWid,
+              ),
+            );
+          else
+            return LoadingPageWidget();
+        },
+      ),
+    );
   }
 }

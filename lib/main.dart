@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pinmybus/pages/buslist_route.dart';
 import 'package:pinmybus/pages/buslist_stop.dart';
+import 'package:pinmybus/pages/loadingscreen.dart';
 import 'package:pinmybus/pages/phoneauth.dart';
 import 'package:pinmybus/pages/searchroute.dart';
 import 'package:pinmybus/pages/institutional.dart';
@@ -36,7 +37,7 @@ class PinMyBusApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/searchRoute': (context) => SearchRoutePage(),
         '/buslist_stop': (context) =>
-            BuslistStop(args: ModalRoute.of(context).settings.arguments),
+            BuslistStop(stop: ModalRoute.of(context).settings.arguments),
         '/buslist_route': (context) =>
             BuslistRoute(args: ModalRoute.of(context).settings.arguments),
         '/routeinfo': (context) =>
@@ -45,6 +46,7 @@ class PinMyBusApp extends StatelessWidget {
         '/insti': (context) => InstitutePage(),
         '/reminders': (context) => Reminder(),
         '/phoneauth': (context) => PhoneAuthScreen(),
+        '/loading': (context) => LoadingPage(),
       },
     );
   }

@@ -117,16 +117,14 @@ class _MapPickerPageState extends State<MapPickerPage> {
                             final HttpsCallable callable = CloudFunctions
                                 .instance
                                 .getHttpsCallable(functionName: "requestStop");
-                                print(_position.target);
-                            HttpsCallableResult response =
-                                await callable.call(<String, dynamic>{
+                            print(_position.target);
+                            callable.call(<String, dynamic>{
                               "name": text,
                               "coordinates": [
                                 _position.target.latitude,
                                 _position.target.longitude
                               ]
-                            }).catchError((e)=>print(e));
-                            print(response.data);
+                            }).catchError((e) => print(e));
                             Navigator.pop(context);
                             Navigator.pop(context);
                           },

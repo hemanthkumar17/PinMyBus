@@ -13,7 +13,6 @@ class LocationService {
         LocationOptions(accuracy: LocationAccuracy.best);
     Geolocator().getPositionStream(locationOptions).listen((Position position) {
       _locationController.add(LatLng(position.latitude, position.longitude));
-      print(position.toString());
     }, onError: (Object error) => print(error), onDone: () => print("Done"));
   }
 }

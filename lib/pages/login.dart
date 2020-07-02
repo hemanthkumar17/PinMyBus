@@ -50,10 +50,7 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
-    await GlobalFunctions.getStops();
-    await GlobalFunctions.getInstitutes();
-    Scheduler.initNotifications();
-    _initializeData(user); //*
+    await _initializeData(user); //*
     return user;
   }
 
@@ -110,8 +107,9 @@ class _LoginState extends State<Login> {
 //*Dismantle after the backend is ready to use
 
   Future<void> _initializeData(FirebaseUser user) async {
+    Navigator.pushReplacementNamed(context, '/loading');
     final FirebaseDatabase dataBase = FirebaseDatabase.instance;
-    await dataBase
+    dataBase
         .reference()
         .child("userInfo")
         .child(user.uid)
@@ -281,11 +279,8 @@ class _LoginState extends State<Login> {
           color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          onPressed: () {
-            _handleSignIn()
-                .then((FirebaseUser user) =>
-                    Navigator.pushNamed(context, '/home', arguments: user))
-                .catchError((e) => print(e));
+          onPressed: () async {
+            await _handleSignIn();
           },
           child: Padding(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),

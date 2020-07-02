@@ -244,20 +244,11 @@ class _SearchRoutePageState extends State<SearchRoutePage> {
                                     "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year.toString()}"
                               };
                               print(data);
-                              final HttpsCallable callable =
-                                  CloudFunctions.instance.getHttpsCallable(
-                                      functionName: "searchRoutes");
-                              final HttpsCallableResult response =
-                                  await callable.call(data);
-                              List<BusRoute> routeList = [];
-                              print(response.data);
-                              for (var route in response.data) {
-                                routeList.add(BusRoute.fromResponse(route));
-                              }
 
                               Navigator.pushNamed(context, '/buslist_route',
                                   arguments: {
-                                    "routeList": routeList,
+                                    "data": data,
+                                    "function": "searchRoutes"
                                   });
                             }),
                         SizedBox(

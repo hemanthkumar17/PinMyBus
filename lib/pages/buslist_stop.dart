@@ -1,31 +1,44 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/models/stops.dart';
+import 'package:pinmybus/widgets/loadingpagewidget.dart';
 
 class BuslistStop extends StatefulWidget {
-  final Map args;
-  BuslistStop({Key key, @required this.args}) : super(key: key);
+  final Stop stop;
+  BuslistStop({Key key, @required this.stop}) : super(key: key);
 
   @override
   _BuslistStopState createState() => _BuslistStopState();
 }
 
 class _BuslistStopState extends State<BuslistStop> {
-  String bustype = "Private";
-  String busnumber = '0000';
-  String details = 'Other details';
-  String timehr = '00';
-  String timemin = '00';
+  List<BusRoute> routeList = [];
+  Future<bool> _getRouteListByStop() async {
+    Map<String, dynamic> data = {
+      "startStop": widget.stop.stopid,
+    };
+    print(data);
+    final HttpsCallable callable =
+        CloudFunctions.instance.getHttpsCallable(functionName: "searchRoutes");
+    final HttpsCallableResult response = await callable.call(data);
+    print(response.data);
+    for (var route in response.data) {
+      routeList.add(BusRoute.fromResponse(route));
+    }
+    return true;
+  }
 
   List<Widget> routeWid = [];
 
-  void createWid() {
+  List<Widget> createWid() {
     routeWid = [];
-    for (BusRoute route in widget.args["routeList"]) {
+    for (BusRoute route in routeList) {
       Stop stop = route.routeStops.firstWhere(
-          (element) => element.stopName == widget.args["stopName"], orElse: () {
+          (element) => element.stopName == widget.stop.stopName, orElse: () {
         return null;
       });
+      print(stop);
       if (stop == null) continue;
       print(route.userData);
       print(route.toJson());
@@ -59,7 +72,7 @@ class _BuslistStopState extends State<BuslistStop> {
                 Align(
                   alignment: Alignment(-.75, .50),
                   child: Text(
-                  route.userData.licenseNumber ?? "default",
+                    route.userData.licenseNumber ?? "default",
                     style: TextStyle(fontSize: 15, color: Colors.black45),
                   ),
                 )
@@ -81,25 +94,34 @@ class _BuslistStopState extends State<BuslistStop> {
       ];
       print("empty");
     }
+    return routeWid;
   }
 
   @override
   void initState() {
     super.initState();
-    createWid();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.args["stopName"]?? "default"),
-          backgroundColor: Color.fromRGBO(255, 171, 0, .9),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: routeWid,
-          ),
-        ));
+      appBar: AppBar(
+        title: Text(widget.stop.stopName ?? "default"),
+        backgroundColor: Color.fromRGBO(255, 171, 0, .9),
+      ),
+      body: FutureBuilder(
+        future: _getRouteListByStop(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData)
+            return SingleChildScrollView(
+              child: Column(
+                children: createWid(),
+              ),
+            );
+          else
+            return LoadingPageWidget();
+        },
+      ),
+    );
   }
 }

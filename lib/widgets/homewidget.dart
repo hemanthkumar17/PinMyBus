@@ -52,23 +52,6 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
     });
   }
 
-  Future<void> _getRouteListByStop(Stop stop) async {
-    Map<String, dynamic> data = {
-      "startStop": stop.stopid,
-    };
-    print(data);
-    final HttpsCallable callable =
-        CloudFunctions.instance.getHttpsCallable(functionName: "searchRoutes");
-    final HttpsCallableResult response = await callable.call(data);
-    List<BusRoute> routeList = [];
-    print(response.data);
-    for (var route in response.data) {
-      routeList.add(BusRoute.fromResponse(route));
-    }
-    Navigator.pushNamed(context, '/buslist_stop',
-        arguments: {"routeList": routeList, "stopName": stop.stopName});
-  }
-
   List<Widget> generateCards() {
     List<Widget> _cardList = [];
 
@@ -117,7 +100,8 @@ class _HomeStackWidgetState extends State<HomeStackWidget> {
                       ),
                     ]))),
       ),
-      onTap: () => _getRouteListByStop(stop),
+      onTap: () =>
+          Navigator.pushNamed(context, '/buslist_stop', arguments: stop),
     );
   }
 
