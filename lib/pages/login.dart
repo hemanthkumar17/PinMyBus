@@ -57,11 +57,15 @@ class _LoginState extends State<Login> {
   Future<void> _facebookLogin() async {
     final facebookLogin = FacebookLogin();
     final result = await facebookLogin.logInWithReadPermissions(['email']);
+
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    final _result = _auth.signInWithCredential(
-        FacebookAuthProvider.getCredential(
-            accessToken: result.accessToken.token));
-    print(result.errorMessage);
+    final FirebaseUser _user = (await _auth.signInWithCredential(
+            FacebookAuthProvider.getCredential(
+                accessToken: result.accessToken.token)))
+        .user;
+
+    print(_user);
+
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
         final token = result.accessToken.token;
@@ -70,29 +74,7 @@ class _LoginState extends State<Login> {
         final profile = jsonDecode(graphResponse.body);
         print("Profile");
         print(profile);
-        setState(() async {
-          final userProfile = profile;
-          await GlobalFunctions.getStops();
-          await GlobalFunctions.getInstitutes();
-          Scheduler.initNotifications();
-          // final FirebaseDatabase dataBase = FirebaseDatabase.instance;
-          // await dataBase
-          //     .reference()
-          //     .child("userInfo")
-          //     .child(user.uid)
-          //     .once()
-          //     .then((DataSnapshot snapshot) {
-          //   if (snapshot.value == null) {
-          //     dataBase.reference().child("userInfo").child(user.uid).set({
-          //       "contactNumber": "",
-          //       "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
-          //       "email": user.email,
-          //       "status": true,
-          //       "userType": "default",
-          //     });
-          //   }
-          // });
-        });
+        _initializeData(_user);
         break;
 
       case FacebookLoginStatus.cancelledByUser:
