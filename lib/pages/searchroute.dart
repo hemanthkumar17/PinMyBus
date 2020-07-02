@@ -1,7 +1,9 @@
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pinmybus/models/globals.dart';
 import 'package:pinmybus/models/routes.dart';
 import 'package:pinmybus/models/stops.dart';
@@ -147,39 +149,59 @@ class _SearchRoutePageState extends State<SearchRoutePage> {
                               searchStop(context, true);
                             }),
                         InkWell(
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                      ),
-                                      height: 50,
-                                      child: Row(children: <Widget>[
-                                        Padding(
-                                            padding: EdgeInsets.only(left: 10)),
-                                        Icon(Icons.search),
-                                        Padding(
-                                            padding: EdgeInsets.only(left: 20)),
-                                        Text(dest,
-                                            style: TextStyle(
-                                              fontSize: 20.0,
-                                              color: Colors.black,
-                                            )),
-                                      ]),
-                                    ),
-                                    destCancel
-                                  ]),
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
                             ),
-                            onTap: () {
-                              searchStop(context, false);
-                            }),
+                            child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    height: 50,
+                                    child: Row(children: <Widget>[
+                                      Padding(
+                                          padding: EdgeInsets.only(left: 10)),
+                                      Icon(Icons.search),
+                                      Padding(
+                                          padding: EdgeInsets.only(left: 20)),
+                                      Text(dest,
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                            color: Colors.black,
+                                          )),
+                                    ]),
+                                  ),
+                                  destCancel
+                                ]),
+                          ),
+                          onTap: () {
+                            searchStop(context, false);
+                          },
+                        ),
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            height: 50,
+                            child: Center(
+                              child: Text(
+                                "${DateFormat('EEEE').format(selectedDate)} ${selectedDate.day}-${selectedDate.month}-${selectedDate.year}",
+                                style: TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.black,  
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
                         SizedBox(
                           height: 10,
                         ),
