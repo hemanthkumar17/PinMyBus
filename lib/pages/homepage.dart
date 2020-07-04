@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> {
               children: <Widget>[
                 // DrawerHeader(child: Column(children: <Widget>[Container()])),
                 ListTile(
-                  leading: Icon(IconData(59389, fontFamily: 'MaterialIcons')),
+                  leading: Icon(Icons.person),
                   title: Text('Profile'),
                   onTap: () {
                     Navigator.pushNamed(context, '/profile');

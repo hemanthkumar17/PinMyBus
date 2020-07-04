@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:pinmybus/widgets/loadingpagewidget.dart';
 
 class MapPickerPage extends StatefulWidget {
   MapPickerPage({Key key}) : super(key: key);
@@ -145,7 +145,9 @@ class _MapPickerPageState extends State<MapPickerPage> {
               ]),
             );
           } else {
-            return CircularProgressIndicator();
+            return Scaffold(
+              body: LoadingPageWidget(),
+            );
           }
         });
   }

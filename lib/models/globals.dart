@@ -9,6 +9,7 @@ const URL = "https://us-central1-pinmybus-staging.cloudfunctions.net";
 List<Stop> stopsComplete;
 
 abstract class GlobalFunctions {
+  static String name, email, photoUrl;
   static List<Institute> institutes;
   static LatLng _location;
   static void printError(String error, GlobalKey<ScaffoldState> key) {

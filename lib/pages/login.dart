@@ -50,6 +50,9 @@ class _LoginState extends State<Login> {
     final FirebaseUser user =
         (await _auth.signInWithCredential(credential)).user;
     print("signed in " + user.displayName);
+    GlobalFunctions.email = user.email;
+    GlobalFunctions.name = user.displayName;
+    GlobalFunctions.photoUrl = user.photoUrl;
     await _initializeData(user); //*
     return user;
   }
@@ -74,6 +77,9 @@ class _LoginState extends State<Login> {
         final profile = jsonDecode(graphResponse.body);
         print("Profile");
         print(profile);
+        GlobalFunctions.email = profile["email"];
+        GlobalFunctions.name = profile["name"];
+        GlobalFunctions.photoUrl = profile["picture"]["data"]["url"];
         _initializeData(_user);
         break;
 
@@ -90,6 +96,7 @@ class _LoginState extends State<Login> {
 
   Future<void> _initializeData(FirebaseUser user) async {
     Navigator.pushReplacementNamed(context, '/loading');
+
     final FirebaseDatabase dataBase = FirebaseDatabase.instance;
     dataBase
         .reference()
@@ -290,51 +297,46 @@ class _LoginState extends State<Login> {
   }
 
   Widget _signInButton() {
-    if (disabled == false) {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(100.0),
-          color: Colors.white,
-        ),
-        child: RaisedButton(
-          // color: Color.fromRGBO(255, 171, 0, .9),
-          color: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          onPressed: () async {
-            await _handleSignIn();
-          },
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  width: 50,
-                  height: 50,
-                  // color: Colors.white,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30.0),
-                    color: Colors.white,
-                  ),
-                  child: Image(
-                      image: AssetImage("assets/images/google.png"),
-                      height: 35.0),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100.0),
+        color: Colors.white,
+      ),
+      child: RaisedButton(
+        // color: Color.fromRGBO(255, 171, 0, .9),
+        color: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+        onPressed: () async {
+          await _handleSignIn();
+        },
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                width: 50,
+                height: 50,
+                // color: Colors.white,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Colors.white,
                 ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  'Google account',
-                  style: TextStyle(color: Colors.black),
-                )
-              ],
-            ),
+                child: Image(
+                    image: AssetImage("assets/images/google.png"), height: 5.0),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Google account',
+                style: TextStyle(color: Colors.black),
+              )
+            ],
           ),
         ),
-      );
-    } else
-      return Container();
+      ),
+    );
   }
 }

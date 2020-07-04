@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:pinmybus/models/globals.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
   PhoneAuthScreen({Key key}) : super(key: key);
@@ -45,7 +47,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
         print(_firebaseUser.toString());
       });
       Navigator.popUntil(context, ModalRoute.withName('/'));
-      Navigator.pushNamed(context, '/home');
+      _initializeData(_firebaseUser);
     } catch (e) {
       setState(() {
         _status += e.toString() + '\n';
@@ -73,6 +75,29 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
         },
       );
     }
+  }
+
+  Future<void> _initializeData(FirebaseUser user) async {
+    Navigator.pushReplacementNamed(context, '/loading');
+    GlobalFunctions.email = " ";
+    GlobalFunctions.name = user.phoneNumber;
+    final FirebaseDatabase dataBase = FirebaseDatabase.instance;
+    dataBase
+        .reference()
+        .child("userInfo")
+        .child(user.uid)
+        .once()
+        .then((DataSnapshot snapshot) {
+      if (snapshot.value == null) {
+        dataBase.reference().child("userInfo").child(user.uid).set({
+          "contactNumber": "",
+          "dateOfCreation": DateTime.now().millisecondsSinceEpoch,
+          "email": user.email,
+          "status": true,
+          "userType": "default",
+        });
+      }
+    });
   }
 
   Future<void> _logout() async {
