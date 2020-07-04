@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:pinmybus/models/globals.dart';
 
 // void main() => runApp(Profile());

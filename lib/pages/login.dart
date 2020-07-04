@@ -59,7 +59,7 @@ class _LoginState extends State<Login> {
 
   Future<void> _facebookLogin() async {
     final facebookLogin = FacebookLogin();
-    final result = await facebookLogin.logInWithReadPermissions(['email']);
+    final result = await facebookLogin.logIn(['email']);
 
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final FirebaseUser _user = (await _auth.signInWithCredential(
