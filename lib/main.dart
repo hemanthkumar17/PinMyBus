@@ -4,6 +4,7 @@ import 'package:pinmybus/pages/buslist_route.dart';
 import 'package:pinmybus/pages/buslist_stop.dart';
 import 'package:pinmybus/pages/loadingscreen.dart';
 import 'package:pinmybus/pages/phoneauth.dart';
+import 'package:pinmybus/pages/profile.dart';
 import 'package:pinmybus/pages/searchroute.dart';
 import 'package:pinmybus/pages/institutional.dart';
 import 'package:pinmybus/pages/login.dart';
@@ -47,6 +48,7 @@ class PinMyBusApp extends StatelessWidget {
         '/reminders': (context) => Reminder(),
         '/phoneauth': (context) => PhoneAuthScreen(),
         '/loading': (context) => LoadingPage(),
+        '/profile': (context) => Profile(),
       },
     );
   }
