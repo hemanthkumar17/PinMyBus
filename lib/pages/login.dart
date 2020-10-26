@@ -147,7 +147,7 @@ class _LoginState extends State<Login> {
                       ))),
               DelayedAnimation(
                 child: Text(
-                  "PinMyBus",
+                  "Not PinMyBus",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 35.0,
